@@ -4,57 +4,51 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 @Config
 @TeleOp(name="Slidespid", group="TeleOp")
-public class SlidesPid extends OpMode {
+public class SlidesPid extends LinearOpMode {
 
-    private PIDController pivController;
-    private PIDController extController;
-
-    public static double pivP = 0, pivI = 0, pivD = 0;
+    public static double pivP = 0, pivI = 0, pivD = 0, pivF = 0;
     public static double extP = 0, extI = 0, extD = 0;
 
     public static int pivTarget = 0;
     public static int extTarget = 0;
 
-    private Slides slides;
+    Slides slides;
 
     @Override
-    public void init() {
-        pivController = new PIDController(pivP, pivTarget, pivD);
-        extController = new PIDController(extP, extTarget, extD);
+    public void runOpMode() throws InterruptedException {
+        PIDFController pivController = new PIDFController(pivP, pivI, pivD, pivF);
+        PIDController extController = new PIDController(extP, extI, extD);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         slides = new Slides(hardwareMap, telemetry);
 
-    }
+        waitForStart();
 
-    @Override
-    public void loop() {
-        pivController.setPID(pivP, pivI, pivD);
-        int pivPos = slides.pivMotor().getCurrentPosition();
-        double pivPid = extController.calculate(pivPos, pivTarget);
+        while (opModeIsActive()) {
+            int pivPos = slides.pivMotor().getCurrentPosition();
+            double pivPid = pivController.calculate(pivPos, pivTarget);
 
-        extController.setPID(extP, extI, extD);
-        int extPos = slides.pivMotor().getCurrentPosition();
-        double extPid = extController.calculate(extPos, extTarget);
+            int extPos = slides.spools()[0].getCurrentPosition();
+            double extPid = extController.calculate(extPos, extTarget);
 
-        slides.pivMotor().setPower(pivPid);
+            slides.setPivPower(pivPid);
 
-        slides.spools()[0].setPower(extPid);
-        slides.spools()[1].setPower(extPid);
+            slides.setSlidePower(extPid);
 
 
-        telemetry.addData("pivPos ", pivPos);
-        telemetry.addData("pivTarget ", pivTarget);
-        telemetry.addData("extPos ", extPos);
-        telemetry.addData("extTarget ", extTarget);
-        telemetry.update();
-
+            telemetry.addData("pivPos ", pivPos);
+            telemetry.addData("pivTarget ", pivTarget);
+            telemetry.addData("extPos ", extPos);
+            telemetry.addData("extTarget ", extTarget);
+            telemetry.update();
+        }
     }
 }

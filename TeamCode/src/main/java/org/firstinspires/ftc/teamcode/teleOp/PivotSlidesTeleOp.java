@@ -19,10 +19,10 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     Slides slides;
     EndEffector endF;
 
-    private Timer timer = new Timer();
+    private Timer timer;
     private int state;
 
-    private static double pivInit, pivFront, pivUpright, pivBack;
+    private static double pivInit, pivFront, pivUpright;
     private static double extIn, extOut;
 
     private boolean xPressed = false, aPressed = false, bPressed = false;
@@ -40,6 +40,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
         for (Subsystem system : subsystems) system.init();
         setState(0);
+        timer = new Timer();
 
         while (opModeInInit()) {
             stateMachine();
@@ -120,7 +121,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 break;
             case OUTTAKE:
 
-                if (timer() < 1) {slides.setPivTarget(pivBack);}
+                if (timer() < 1) {slides.setPivTarget(pivUpright);}
                 if (timer() > 1) {
                     slides.setExtTarget(extOut);
                     endF.outtake(gamepad2);
