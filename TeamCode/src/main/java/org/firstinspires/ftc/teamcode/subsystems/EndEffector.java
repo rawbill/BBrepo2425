@@ -46,6 +46,19 @@ public class EndEffector implements Subsystem {
     public void clawOpen()  {clawPos = clawOpen;}
     public void clawClose() {clawPos = clawOpen;}
 
+    public void setGbPos(double pos) {
+        leftGb.setPosition(pos);
+        rightGb.setPosition(pos);
+    }
+
+    public void setRotate(double pos) {
+        clawRot.setPosition(pos);
+    }
+
+    public void setPivot(double pos) {
+        clawPiv.setPosition(pos);
+    }
+
     public void intakeInit() {
         gbPos = 0.5;
         pivPos = 1;
@@ -118,6 +131,17 @@ public class EndEffector implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
+        if (gp2.right_trigger > 0.1) clawClose();
+        else if (gp2.left_trigger > 0.1) clawOpen();
+
+        if (gp2.dpad_down) setGbPos(0);
+        else if(gp2.dpad_up) setGbPos(1);
+
+        if (gp2.right_bumper) setRotate(0);
+        else if (gp2.left_bumper) setRotate(1);
+
+        if (gp2.dpad_left) setPivot(0);
+        else if (gp2.dpad_right) setPivot(1);
 
     }
 }

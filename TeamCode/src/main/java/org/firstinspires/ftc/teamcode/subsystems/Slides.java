@@ -52,6 +52,14 @@ public class Slides implements Subsystem {
         return pivMotor();
     }
 
+    public void setSlidePower(double power) {
+        lSpool.setPower(power);
+        rSpool.setPower(power);
+    }
+    public void setPivPower(double power) {
+        slidePiv.setPower(power);
+    }
+
     public DcMotorEx[] spools() {
         return new DcMotorEx[] {
                 lSpool,
@@ -94,13 +102,19 @@ public class Slides implements Subsystem {
 
     }
 
+//    @Override
+//    public void updateCtrls(Gamepad gp1, Gamepad gp2) {
+//        if (-gp2.left_stick_y < 0.1) pivTarget += -gp2.left_stick_y * 10;
+//        else if (-gp2.left_stick_y > -0.1) pivTarget -= -gp2.left_stick_y * 10;
+//
+//        if (-gp2.right_stick_y < 0.1) extTarget += -gp2.right_stick_y * 10;
+//        else if (-gp2.right_stick_y > -0.1) extTarget -= -gp2.right_stick_y * 10;
+//
+//    }
+
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (-gp2.left_stick_y < 0.1) pivTarget += -gp2.left_stick_y * 10;
-        else if (-gp2.left_stick_y > -0.1) pivTarget -= -gp2.left_stick_y * 10;
-
-        if (-gp2.right_stick_y < 0.1) extTarget += -gp2.right_stick_y * 10;
-        else if (-gp2.right_stick_y > -0.1) extTarget -= -gp2.right_stick_y * 10;
-
+        setSlidePower(gp2.left_stick_y);
+        setPivPower(gp2.right_stick_y);
     }
 }
