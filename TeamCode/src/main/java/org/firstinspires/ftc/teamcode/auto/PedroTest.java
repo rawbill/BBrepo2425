@@ -4,21 +4,20 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+
 import org.firstinspires.ftc.teamcode.subsystems.DR4B;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;
-import org.opencv.core.Mat;
 
 /**
  * This is the Circle autonomous OpMode. It runs the robot in a PathChain that's actually not quite

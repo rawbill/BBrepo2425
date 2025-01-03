@@ -49,7 +49,7 @@ public class Slides implements Subsystem {
     }
 
     public DcMotorEx pivMotor() {
-        return pivMotor();
+        return slidePiv;
     }
 
     public void setSlidePower(double power) {
