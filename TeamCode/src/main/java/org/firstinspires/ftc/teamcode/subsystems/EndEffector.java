@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
+
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
+@Config
 public class EndEffector implements Subsystem {
     private Servo leftGb;
     private Servo rightGb;
@@ -20,9 +24,9 @@ public class EndEffector implements Subsystem {
 
     private Timer timer = new Timer();
 
-    private static double gbPos, pivPos, rotPos, clawPos, clawOpen = 0, clawClose = 1;
+    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 1, clawClose = 0;
 
-    private boolean rBump = true, lBump = true;
+    private boolean rBump = false, rbToggle = false, lBump = false, lbToggle = false;
 
 
 
@@ -40,84 +44,107 @@ public class EndEffector implements Subsystem {
     }
     @Override
     public void init() {
-        telemetry.addData("End Effector","Initialized");
-        telemetry.update();
+        gbPos = 0.1;
+        pivPos = 0.35;
+    }
+
+    public void rest() {
+        gbPos = 0.5;
+        pivPos = 0.2;
+        rotPos = 0.5;
     }
 
     public void clawOpen()  {clawPos = clawOpen;}
-    public void clawClose() {clawPos = clawOpen;}
+    public void clawClose() {clawPos = clawClose;}
 
-    public void setGbPos(double pos) {
-        leftGb.setPosition(pos);
-        rightGb.setPosition(pos);
-    }
+    public void setGbPos(double pos) {gbPos = pos;}
 
-    public void setRotate(double pos) {
-        clawRot.setPosition(pos);
-    }
+    public void setRotate(double pos) {rotPos = pos;}
 
-    public void setPivot(double pos) {
-        clawPiv.setPosition(pos);
-    }
+    public void setPivot(double pos) {pivPos = pos;}
 
     public void intakeInit() {
-        gbPos = 0.5;
-        pivPos = 1;
+        gbPos = 0.8;
+        pivPos = 0.7;
         rotPos = 0.5;
+        clawOpen();
         timer.resetTimer();
     }
 
     public void intake(Gamepad gp2) {
-        rotate(gp2);
-        if (!gp2.right_bumper && rBump) {
+        this.rotate(gp2);
+        if (gp2.right_bumper && !rBump) {
 
-            if (timer.getElapsedTimeSeconds() < 0.25) {
-                gbPos = 0.75;
-                pivPos = 0.75;
+            rbToggle = !rbToggle;
+            if (rbToggle) {
+                gbPos = 1;
+                pivPos = 0.675;
+            } else {
+                gbPos = 0.8;
+                pivPos = 0.65;
             }
-            if (timer.getElapsedTimeSeconds() > 0.25 && timer.getElapsedTimeSeconds() < 0.5) {
-                clawClose();
-            }
-            if (timer.getElapsedTimeSeconds() > 0.5) {
-                intakeInit();
-                rBump = false;
-            }
-
-        } else if (gp2.right_bumper) {
             rBump = true;
+
+
+        } else if (!gp2.right_bumper) {
+            rBump = false;
         }
 
-        if (!gp2.left_bumper && lBump) {
-            lBump = false;
-
-            clawOpen();
-
-        } else if (gp2.left_bumper) {
+        if (gp2.left_bumper && !lBump) {
             lBump = true;
+            lbToggle = !lbToggle;
+            if (lbToggle) {
+                clawOpen();
+            } else {
+                clawClose();
+            }
+        } else if (!gp2.left_bumper) {
+            lBump = false;
         }
     }
 
     public void outtakeInit() {
-        gbPos = 0;
-        pivPos = 0;
+        gbPos = 0.5;
+        pivPos = 0.25;
         rotPos = 0.5;
     }
 
-    public void outtake(Gamepad gp2) {
+    public void specimen(Gamepad gp2) {
+        gbPos = 0;
+        pivPos = 0.2;
 
-        if (!gp2.left_bumper && lBump) {
-            lBump = false;
-
-            clawOpen();
-
-        } else if (gp2.left_bumper) {
+        if (gp2.left_bumper && !lBump) {
             lBump = true;
+            lbToggle = !lbToggle;
+            if (lbToggle) {
+                clawOpen();
+            } else {
+                clawClose();
+            }
+        } else if (!gp2.left_bumper) {
+            lBump = false;
+        }
+
+    }
+
+    public void outtake(Gamepad gp2) {
+        rotate(gp2);
+        if (gp2.left_bumper && !lBump) {
+            lBump = true;
+            lbToggle = !lbToggle;
+            if (lbToggle) {
+                clawOpen();
+            } else {
+                clawClose();
+            }
+        } else if (!gp2.left_bumper) {
+            lBump = false;
         }
     }
 
     public void rotate(Gamepad gp2) {
-        if (gp2.left_trigger > 0.1)  rotPos++;
-        if (gp2.right_trigger > 0.1) rotPos--;
+        if (gp2.left_trigger > 0.1)  rotPos+=0.05;
+        if (gp2.right_trigger > 0.1) rotPos-=0.05;
         clawRot.setPosition(rotPos);
     }
 
@@ -132,17 +159,20 @@ public class EndEffector implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp2.right_trigger > 0.1) clawClose();
-        else if (gp2.left_trigger > 0.1) clawOpen();
+//        if (gp2.right_trigger > 0.1) clawClose();
+//        else if (gp2.left_trigger > 0.1) clawOpen();
+//
+//        if (gp2.dpad_down) setGbPos(0);
+//        else if(gp2.dpad_up) setGbPos(1);
+//
+//        if (gp2.right_bumper) setRotate(0);
+//        else if (gp2.left_bumper) setRotate(1);
+//
+//        if (gp2.dpad_left) setPivot(0);
+//        else if (gp2.dpad_right) setPivot(1);
 
-        if (gp2.dpad_down) setGbPos(0);
-        else if(gp2.dpad_up) setGbPos(1);
-
-        if (gp2.right_bumper) setRotate(0);
-        else if (gp2.left_bumper) setRotate(1);
-
-        if (gp2.dpad_left) setPivot(0);
-        else if (gp2.dpad_right) setPivot(1);
+//        leftGb.setPower(-gp2.right_stick_y);
+//        rightGb.setPower(-gp2.right_stick_y);
 
     }
 }

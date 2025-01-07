@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -10,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
+@Config
 public class Slides implements Subsystem {
 
     Telemetry telemetry;
@@ -18,11 +20,12 @@ public class Slides implements Subsystem {
     private DcMotorEx lSpool;
     private DcMotorEx rSpool;
 
-    private PIDController pivController;
+    private PIDFController pivController;
     private PIDController extController;
 
-    public static double pivP = 0, pivI = 0, pivD = 0;
-    public static double extP = 0, extI = 0, extD = 0;
+    public static double Kcos = 0.0004;
+    public static double pivP = 0.02, pivI = 0, pivD = 0.0002, pivF;
+    public static double extP = 0.01, extI = 0, extD = 0.0001;
 
     public static double pivTarget = 0;
     public static double extTarget = 0;
@@ -39,12 +42,18 @@ public class Slides implements Subsystem {
 
         slidePiv.setDirection(DcMotor.Direction.REVERSE);
         slidePiv.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slidePiv.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slidePiv.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         lSpool.setDirection(DcMotor.Direction.FORWARD);
         lSpool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lSpool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lSpool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rSpool.setDirection(DcMotor.Direction.REVERSE);
         rSpool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rSpool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rSpool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
@@ -86,9 +95,28 @@ public class Slides implements Subsystem {
         extTarget = ext;
    }
 
+   public void updatePiv() {
+       pivF = Math.cos(pivTarget) * Kcos;
+       pivController.setPIDF(pivP, pivI, pivD, pivF);
+       double pivPos = pivMotor().getCurrentPosition();
+       double pivPid = extController.calculate(pivPos, pivTarget);
+
+       pivMotor().setPower(pivPid);
+   }
+
+   public void updateExt() {
+       extController.setPID(extP, extI, extD);
+       double extPos = pivMotor().getCurrentPosition();
+       double extPid = extController.calculate(extPos, extTarget);
+
+       spools()[0].setPower(extPid);
+       spools()[1].setPower(extPid);
+   }
+
     @Override
     public void update() {
-        pivController.setPID(pivP, pivI, pivD);
+        pivF = Math.cos(pivTarget) * Kcos;
+        pivController.setPIDF(pivP, pivI, pivD, pivF);
         double pivPos = pivMotor().getCurrentPosition();
         double pivPid = extController.calculate(pivPos, pivTarget);
 
@@ -114,7 +142,7 @@ public class Slides implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        setSlidePower(gp2.left_stick_y);
-        setPivPower(gp2.right_stick_y);
+        setSlidePower(-gp2.left_stick_y);
+//        setPivPower(gp2.right_stick_y);
     }
 }
