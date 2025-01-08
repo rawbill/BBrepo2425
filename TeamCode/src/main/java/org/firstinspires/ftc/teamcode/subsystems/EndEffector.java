@@ -78,10 +78,10 @@ public class EndEffector implements Subsystem {
             rbToggle = !rbToggle;
             if (rbToggle) {
                 gbPos = 1;
-                pivPos = 0.675;
+                pivPos = 0.6;
             } else {
                 gbPos = 0.8;
-                pivPos = 0.65;
+                pivPos = 0.55;
             }
             rBump = true;
 
@@ -111,7 +111,7 @@ public class EndEffector implements Subsystem {
 
     public void specimen(Gamepad gp2) {
         gbPos = 0;
-        pivPos = 0.2;
+        pivPos = 0.15;
 
         if (gp2.left_bumper && !lBump) {
             lBump = true;

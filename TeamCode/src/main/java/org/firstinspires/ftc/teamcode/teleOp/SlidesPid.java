@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Slides;
 @TeleOp(name="Slidespid", group="TeleOp")
 public class SlidesPid extends LinearOpMode {
 
-    public static double Kcos = 0.0004;
-    public static double pivP = 0.01, pivI = 0, pivD = 0.0001, pivF;
+    public static double Kcos = 0.00001;
+    public static double pivP = 0.00375, pivI = 0, pivD = 0.0001, pivF;
     public static double extP = 0.01, extI = 0, extD = 0.0001;
 
     public static int pivTarget = 0;

@@ -22,8 +22,8 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     private Timer timer;
     private int state;
 
-    public static double pivInit = 250, pivDown = 750, pivUp = 0;
-    public static double extIn = 0, extMid = 600, extOut = 2375;
+    public static double pivInit = 250, pivDown = 1500, pivUp = 0;
+    public static double extIn = 0, extMid = 1600, extOut = 2375;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false;
 
@@ -65,6 +65,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             endF.update();
 
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
+            telemetry.addData("exrtPos ", slides.spools()[0].getCurrentPosition());
 
             telemetry.update();
         }
@@ -96,13 +97,17 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 if (timer() < 0.5) {slides.setPivTarget(pivDown);}
                 if (timer() > 0.5 && timer() < 1.5) {
-                    slides.setExtTarget(extMid);
+//                    slides.setExtTarget(extMid);
                     endF.intakeInit();
                 }
                 if (timer() > 1.5) {
+                    slides.setExtTarget(extMid);
                     endF.intake(gamepad2);
                 }
-                slides.update();
+                slides.updateCtrls(gamepad1, gamepad2);
+                if (slides.spools()[0].getCurrentPosition() > 600) slides.setSlidePower(-0.1);
+                slides.updatePiv();
+//                slides.update();
 
                 // transitions
                 if (gamepad2.a && !aPressed) {
@@ -127,11 +132,9 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
                 if (timer() > 1.5) {
                     slides.setPivTarget(pivUp);
-                    if (timer() > 0.5 && timer() < 1.5) {
-                        slides.setPivTarget(pivUp);
-                    }
                 }
                 slides.updatePiv();
+                endF.outtake(gamepad2);
 
                 // transitions
                 if (gamepad2.x && !xPressed) {
