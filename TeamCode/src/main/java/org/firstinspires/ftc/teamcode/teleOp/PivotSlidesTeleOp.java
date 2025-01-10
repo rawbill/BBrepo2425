@@ -25,7 +25,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     public static double pivInit = 250, pivDown = 1500, pivUp = 0;
     public static double extIn = 0, extMid = 1600, extOut = 2375;
 
-    private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false;
+    private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, specCtrl = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -74,7 +74,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     public double timer() {return timer.getElapsedTimeSeconds();}
     public void setState(int state) {this.state = state;}
 
-    public void stateMachine() {
+    public void stateMachine() throws InterruptedException {
 
         final int INIT = 0, INTAKE = 1, REST = 2, OUTTAKE = 3, SPECIMEN = 4;
         switch (state) {
@@ -109,6 +109,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 slides.updatePiv();
 //                slides.update();
 
+
                 // transitions
                 if (gamepad2.a && !aPressed) {
                     aPressed = true;
@@ -137,11 +138,6 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 endF.outtake(gamepad2);
 
                 // transitions
-                if (gamepad2.x && !xPressed) {
-                    xPressed = true;
-                    setState(OUTTAKE);
-                    timer.resetTimer();
-                } else if (!gamepad2.x) xPressed = false;
 
                 if (gamepad2.b && !bPressed) {
                     bPressed = true;
@@ -179,9 +175,28 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 slides.setPivTarget(pivUp);
                 slides.setExtTarget(extIn);
-                endF.specimen(gamepad2);
+                if (timer.getElapsedTimeSeconds() < 0.5) {
+                    endF.clawOpen();
+                }
+                if (timer.getElapsedTimeSeconds() > 0.5 && timer.getElapsedTimeSeconds() < 0.75) {
+                    endF.specimenInit();
+                }
+                if (gamepad2.right_bumper && !rBump) {
+                    rBump = true;
+                    endF.clawClose();
 
-                slides.update();
+                    specCtrl = true;
+                } else if (!gamepad2.right_bumper) {
+                    rBump = false;
+                }
+                if (specCtrl) {
+                    endF.specimen(gamepad2);
+                    rBump = true;
+                }
+
+                slides.updatePiv();
+                slides.updateCtrls(gamepad1, gamepad2
+                );
 
 
                 // transitions

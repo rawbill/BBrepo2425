@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -26,7 +24,7 @@ public class EndEffector implements Subsystem {
 
     public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 1, clawClose = 0;
 
-    private boolean rBump = false, rbToggle = false, lBump = false, lbToggle = false;
+    private boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, rdToggle = false;
 
 
 
@@ -49,8 +47,14 @@ public class EndEffector implements Subsystem {
     }
 
     public void rest() {
-        gbPos = 0.5;
+        gbPos = 0.45;
         pivPos = 0.2;
+        rotPos = 0.5;
+    }
+
+    public void straight() {
+        gbPos = 0.55;
+        pivPos = 0.4;
         rotPos = 0.5;
     }
 
@@ -73,78 +77,109 @@ public class EndEffector implements Subsystem {
 
     public void intake(Gamepad gp2) {
         this.rotate(gp2);
-        if (gp2.right_bumper && !rBump) {
+        if (gp2.dpad_down && !dPad) {
 
-            rbToggle = !rbToggle;
-            if (rbToggle) {
+            ddToggle = !ddToggle;
+            if (ddToggle) {
                 gbPos = 1;
                 pivPos = 0.6;
             } else {
                 gbPos = 0.8;
-                pivPos = 0.55;
+                pivPos = 0.7;
             }
+            dPad = true;
+
+        } else if (!gp2.dpad_down) {
+            dPad = false;
+        }
+
+        if (gp2.right_bumper && !rBump) {
             rBump = true;
-
-
+            rbToggle = !rbToggle;
+            if (rbToggle) {
+                clawClose();
+            } else {
+                clawOpen();
+            }
         } else if (!gp2.right_bumper) {
             rBump = false;
         }
 
-        if (gp2.left_bumper && !lBump) {
-            lBump = true;
-            lbToggle = !lbToggle;
-            if (lbToggle) {
-                clawOpen();
+        if (gp2.dpad_right && !rPad) {
+            rPad = true;
+            rdToggle = !rdToggle;
+            if (rdToggle) {
+                straight();
+                dPad = true;
             } else {
-                clawClose();
+                dPad = false;
+                ddToggle = true;
             }
-        } else if (!gp2.left_bumper) {
-            lBump = false;
+        } else if (!gp2.dpad_right) {
+            rPad = false;
         }
     }
 
     public void outtakeInit() {
         gbPos = 0.5;
-        pivPos = 0.25;
+        pivPos = 0.2;
         rotPos = 0.5;
-    }
-
-    public void specimen(Gamepad gp2) {
-        gbPos = 0;
-        pivPos = 0.15;
-
-        if (gp2.left_bumper && !lBump) {
-            lBump = true;
-            lbToggle = !lbToggle;
-            if (lbToggle) {
-                clawOpen();
-            } else {
-                clawClose();
-            }
-        } else if (!gp2.left_bumper) {
-            lBump = false;
-        }
-
     }
 
     public void outtake(Gamepad gp2) {
         rotate(gp2);
-        if (gp2.left_bumper && !lBump) {
-            lBump = true;
-            lbToggle = !lbToggle;
-            if (lbToggle) {
-                clawOpen();
-            } else {
+        if (gp2.right_bumper && !rBump) {
+            rBump = true;
+            rbToggle = !rbToggle;
+            if (rbToggle) {
                 clawClose();
+            } else {
+                clawOpen();
             }
-        } else if (!gp2.left_bumper) {
-            lBump = false;
+        } else if (!gp2.right_bumper) {
+            rBump = false;
         }
     }
 
+    public void specimenInit() {
+        gbPos = 0;
+        pivPos = 0.075;
+        clawOpen();
+    }
+
+    public void specimen(Gamepad gp2) {
+
+        if (gp2.right_bumper && !rBump) {
+            rBump = true;
+            rbToggle = !rbToggle;
+            if (rbToggle) {
+                clawClose();
+            } else {
+                clawOpen();
+            }
+        } else if (!gp2.right_bumper) {
+            rBump = false;
+        }
+
+        if (gp2.dpad_down && !dPad) {
+            ddToggle = !ddToggle;
+            if (ddToggle) {
+                gbPos = 0.75;
+                pivPos = 0.6;
+            } else {
+                straight();
+//                clawOpen();
+            }
+            dPad = true;
+        } else if (!gp2.dpad_down) {
+            dPad = false;
+        }
+
+    }
+
     public void rotate(Gamepad gp2) {
-        if (gp2.left_trigger > 0.1)  rotPos+=0.05;
-        if (gp2.right_trigger > 0.1) rotPos-=0.05;
+        if (gp2.left_trigger > 0.8)  rotPos+=0.01;
+        if (gp2.right_trigger > 0.8) rotPos-=0.01;
         clawRot.setPosition(rotPos);
     }
 
