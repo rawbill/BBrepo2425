@@ -76,7 +76,7 @@ public class EndEffector implements Subsystem {
     }
 
     public void intake(Gamepad gp2) {
-        this.rotate(gp2);
+        rotate(gp2);
         if (gp2.dpad_down && !dPad) {
 
             ddToggle = !ddToggle;
@@ -148,7 +148,7 @@ public class EndEffector implements Subsystem {
     }
 
     public void specimen(Gamepad gp2) {
-
+        rotate(gp2);
         if (gp2.right_bumper && !rBump) {
             rBump = true;
             rbToggle = !rbToggle;
@@ -178,8 +178,8 @@ public class EndEffector implements Subsystem {
     }
 
     public void rotate(Gamepad gp2) {
-        if (gp2.left_trigger > 0.8)  rotPos+=0.01;
-        if (gp2.right_trigger > 0.8) rotPos-=0.01;
+        if (gp2.left_trigger > 0.8)  rotPos+=0.0075;
+        if (gp2.right_trigger > 0.8) rotPos-=0.0075;
         clawRot.setPosition(rotPos);
     }
 
