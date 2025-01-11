@@ -195,8 +195,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
 
                 slides.updatePiv();
-                slides.updateCtrls(gamepad1, gamepad2
-                );
+                slides.updateCtrls(gamepad1, gamepad2);
 
 
                 // transitions

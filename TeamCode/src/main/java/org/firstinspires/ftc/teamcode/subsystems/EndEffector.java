@@ -22,7 +22,7 @@ public class EndEffector implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 1, clawClose = 0;
+    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 1, clawClose = 0.5;
 
     private boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, rdToggle = false;
 
@@ -42,8 +42,8 @@ public class EndEffector implements Subsystem {
     }
     @Override
     public void init() {
-        gbPos = 0.1;
-        pivPos = 0.35;
+        gbPos = 1;
+        pivPos = 0.9;
     }
 
     public void rest() {
@@ -54,7 +54,13 @@ public class EndEffector implements Subsystem {
 
     public void straight() {
         gbPos = 0.55;
-        pivPos = 0.4;
+        pivPos = 0.45;
+        rotPos = 0.5;
+    }
+
+    public void resetAuto() {
+        gbPos = 0;
+        pivPos = 0.45;
         rotPos = 0.5;
     }
 

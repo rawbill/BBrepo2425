@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DR4B;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.EndEffector;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;
+import org.firstinspires.ftc.teamcode.subsystems.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.Slides_old;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
@@ -19,41 +21,47 @@ public class AutoStrafe extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
-    DR4B dr4b;
-    Slides_old slides;
-    Intake intake;
-    Outtake outtake;
+    Slides slides;
+    EndEffector io;
 
     @Override
     public void runOpMode() throws InterruptedException {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
-        dr4b = new DR4B(hardwareMap, telemetry);
-        slides = new Slides_old(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry);
-        outtake = new Outtake(hardwareMap, telemetry);
+        slides = new Slides(hardwareMap, telemetry);
+        io = new EndEffector(hardwareMap, telemetry);
 
-        Subsystem[] subsystems = new Subsystem[] {
-                drivetrain, dr4b, slides, intake, outtake
-        };
+        boolean ran = false;
 
-        for (Subsystem system : subsystems) {
-            system.init();
-        }
+        io.init();
 
         // Wait for the game to start (driver presses START)
-        waitForStart();
+        while (!isStarted()) {
+            slides.setPivTarget(650);
+            slides.updatePiv();
+            io.update();
+        }
         runtime.reset();
 
+        slides.setPivTarget(0);
+        io.outtakeInit();
+
         // run until the end of the match (driver presses STOP)
-        if (opModeIsActive()) {
-            drivetrain.imu().resetYaw();
-            drivetrain.startEncoder();
+        while (opModeIsActive()) {
+            if (!ran && slides.pivMotor().getCurrentPosition() < 10) {
+                drivetrain.imu().resetYaw();
+                drivetrain.startEncoder();
 
-            drivetrain.encoderDriveRightInches(24);
-            drivetrain.imuCorrection(0,0.4);
+                io.outtakeInit();
 
-            drivetrain.stopEncoder();
-            drivetrain.imu().resetYaw();
+                drivetrain.encoderDriveRightInches(24);
+                drivetrain.imuCorrection(0, 0.4);
+
+                drivetrain.stopEncoder();
+                io.resetAuto();
+                ran = true;
+            }
+            slides.updatePiv();
+            io.update();
         }
     }
 }
