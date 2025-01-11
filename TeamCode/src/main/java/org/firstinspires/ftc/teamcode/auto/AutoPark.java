@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DR4B;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.EndEffector;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;
+import org.firstinspires.ftc.teamcode.subsystems.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.Slides_old;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
@@ -19,58 +21,75 @@ public class AutoPark extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
-    DR4B dr4b;
-    Slides_old slides;
-    Intake intake;
-    Outtake outtake;
+    Slides slides;
+    EndEffector io;
+
+    private final int STILL = 0, FORWARD = 1, BACKWARD = 2, LEFT = 3, RIGHT = 4;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
-        dr4b = new DR4B(hardwareMap, telemetry);
-        slides = new Slides_old(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry);
-        outtake = new Outtake(hardwareMap, telemetry);
+        slides = new Slides(hardwareMap, telemetry);
+        io = new EndEffector(hardwareMap, telemetry);
 
-        Subsystem[] subsystems = new Subsystem[] {
-                drivetrain, dr4b, slides, intake, outtake
-        };
+        boolean ran = false;
 
-        for (Subsystem system : subsystems) {
-            system.init();
-        }
+        io.init();
+        io.clawClose();
+        drivetrain.imu().resetYaw();
 
         // Wait for the game to start (driver presses START)
-        waitForStart();
+        while (!isStarted()) {
+            slides.setPivTarget(650);
+            slides.updatePiv();
+            io.update();
+        }
         runtime.reset();
 
+        slides.setPivTarget(0);
+        io.spec4auto();
+        drivetrain.stopEncoder();
         // run until the end of the match (driver presses STOP)
+        waitForStart();
+
+
         if (opModeIsActive()) {
-            drivetrain.imu().resetYaw();
-            drivetrain.startEncoder();
-            slides.moveSlides(0);
 
-            intake.close();
-            sleep(100);
-            outtake.outSamp();
-            drivetrain.encoderDriveForwardInches(8.6);
-            drivetrain.imuCorrection(0,0.4);
-            sleep(250);
-            intake.gbDown();
-            intake.pivDown();
-            sleep(375);
-            intake.open();
-            drivetrain.encoderDriveBackwardInches(2);
-            drivetrain.imuCorrection(0,0.4);
-            intake.pivUp();
-            outtake.in();
-            drivetrain.encoderDriveBackwardInches(6.5);
-            drivetrain.imuCorrection(0,0.4);
-            drivetrain.encoderDriveRightInches(24);
-            drivetrain.imuCorrection(0,0.4);
+            drivetrain.setState(FORWARD, 30);
+            while (!drivetrain.stateMachine()) {
+                drivetrain.stateMachine();
+                slides.updatePiv();
+                io.update();
+            }
 
-            drivetrain.stopEncoder();
-            drivetrain.imu().resetYaw();
+            io.straight();
+
+            drivetrain.setState(BACKWARD, 10);
+            while (!drivetrain.stateMachine()) {
+                drivetrain.stateMachine();
+                slides.updatePiv();
+                io.update();
+            }
+
+            io.clawOpen();
+            io.update();
+
+            drivetrain.setState(BACKWARD, 20);
+            while (!drivetrain.stateMachine()) {
+                drivetrain.stateMachine();
+                slides.updatePiv();
+                io.update();
+            }
+
+            drivetrain.setState(RIGHT, 30);
+            while (!drivetrain.stateMachine()) {
+                drivetrain.stateMachine();
+                slides.updatePiv();
+                io.update();
+            }
+
+
         }
     }
 }

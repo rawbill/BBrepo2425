@@ -17,12 +17,12 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
     Slides slides;
-    EndEffector endF;
+    EndEffector io;
 
     private Timer timer;
     private int state;
 
-    public static double pivInit = 250, pivDown = 1500, pivUp = 0;
+    public static double pivInit = 650, pivDown = 1500, pivUp = 0;
     public static double extIn = 0, extMid = 1600, extOut = 2375;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, specCtrl = false;
@@ -31,22 +31,23 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
-        endF = new EndEffector(hardwareMap, telemetry);
+        io = new EndEffector(hardwareMap, telemetry);
 
 
         Subsystem[] subsystems = new Subsystem[] {
-                drivetrain, slides, endF
+                drivetrain, slides, io
         };
 
         for (Subsystem system : subsystems) system.init();
         sleep(1000);
-        setState(2);
+        setState(0);
         timer = new Timer();
 
         while (!opModeIsActive()) {
             stateMachine();
-            slides.update();
-            endF.update();
+            io.clawClose();
+            slides.updatePiv();
+            io.update();
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
             telemetry.update();
         }
@@ -62,7 +63,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
             drivetrain.updateCtrls(gamepad1, gamepad2);
 //            endF.updateCtrls(gamepad1, gamepad2);
-            endF.update();
+            io.update();
 
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
             telemetry.addData("exrtPos ", slides.spools()[0].getCurrentPosition());
@@ -74,14 +75,13 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     public double timer() {return timer.getElapsedTimeSeconds();}
     public void setState(int state) {this.state = state;}
 
-    public void stateMachine() throws InterruptedException {
+    public void stateMachine() {
 
         final int INIT = 0, INTAKE = 1, REST = 2, OUTTAKE = 3, SPECIMEN = 4;
         switch (state) {
             case INIT:
                 slides.setPivTarget(pivInit);
-                slides.setExtTarget(25);
-                endF.init();
+                io.init();
                 slides.updatePiv();
                 // transitions
                 if (gamepad2.a && !aPressed) {
@@ -95,14 +95,14 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 break;
             case INTAKE:
 
-                if (timer() < 0.5) {slides.setPivTarget(pivDown);}
-                if (timer() > 0.5 && timer() < 1.5) {
+                if (timer() < 0.25) {slides.setPivTarget(pivDown);}
+                if (timer() > 0.25 && timer() < 0.5) {
 //                    slides.setExtTarget(extMid);
-                    endF.intakeInit();
+                    io.intakeInit();
                 }
-                if (timer() > 1.5) {
+                if (timer() > 0.5) {
                     slides.setExtTarget(extMid);
-                    endF.intake(gamepad2);
+                    io.intake(gamepad2);
                 }
                 slides.updateCtrls(gamepad1, gamepad2);
                 if (slides.spools()[0].getCurrentPosition() > 600) slides.setSlidePower(-0.1);
@@ -124,18 +124,18 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 slides.updateCtrls(gamepad1, gamepad2);
 
-                if (timer() < 0.5) {
-                    endF.rest();
+                if (timer() < 0.25) {
+                    io.rest();
                     slides.setExtTarget(extIn);
                 }
-                if (timer() > 0.5 && timer() < 1.5) {
+                if (timer() > 0.25 && timer() < 1) {
                     slides.setPivTarget(pivUp);
                 }
-                if (timer() > 1.5) {
+                if (timer() > 1) {
                     slides.setPivTarget(pivUp);
                 }
                 slides.updatePiv();
-                endF.outtake(gamepad2);
+                io.outtake(gamepad2);
 
                 // transitions
 
@@ -155,8 +155,8 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 slides.setPivTarget(pivUp);
                 slides.setExtTarget(extOut);
-                endF.outtakeInit();
-                endF.outtake(gamepad2);
+                io.outtakeInit();
+                io.outtake(gamepad2);
 
                 slides.update();
 
@@ -176,21 +176,21 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 slides.setPivTarget(pivUp);
                 slides.setExtTarget(extIn);
                 if (timer.getElapsedTimeSeconds() < 0.5) {
-                    endF.clawOpen();
+                    io.clawOpen();
                 }
                 if (timer.getElapsedTimeSeconds() > 0.5 && timer.getElapsedTimeSeconds() < 0.75) {
-                    endF.specimenInit();
+                    io.specimenInit();
                 }
                 if (gamepad2.right_bumper && !rBump) {
                     rBump = true;
-                    endF.clawClose();
+                    io.clawClose();
 
                     specCtrl = true;
                 } else if (!gamepad2.right_bumper) {
                     rBump = false;
                 }
                 if (specCtrl) {
-                    endF.specimen(gamepad2);
+                    io.specimen(gamepad2);
                     rBump = true;
                 }
 

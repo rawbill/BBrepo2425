@@ -22,13 +22,13 @@ public class EndEffector implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 1, clawClose = 0.5;
+    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.5, clawClose = 0.2;
 
     private boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, rdToggle = false;
 
 
 
-    public EndEffector(HardwareMap hardwareMap, Telemetry telemetry){
+    public EndEffector(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         leftGb = hardwareMap.get(Servo.class,"leftGb");
         rightGb = hardwareMap.get(Servo.class,"rightGb");
@@ -58,11 +58,12 @@ public class EndEffector implements Subsystem {
         rotPos = 0.5;
     }
 
-    public void resetAuto() {
-        gbPos = 0;
-        pivPos = 0.45;
+    public void spec4auto() {
+        gbPos = 0.75;
+        pivPos = 0.6;
         rotPos = 0.5;
     }
+
 
     public void clawOpen()  {clawPos = clawOpen;}
     public void clawClose() {clawPos = clawClose;}
@@ -74,9 +75,7 @@ public class EndEffector implements Subsystem {
     public void setPivot(double pos) {pivPos = pos;}
 
     public void intakeInit() {
-        gbPos = 0.8;
-        pivPos = 0.7;
-        rotPos = 0.5;
+        straight();
         clawOpen();
         timer.resetTimer();
     }
@@ -172,9 +171,10 @@ public class EndEffector implements Subsystem {
             if (ddToggle) {
                 gbPos = 0.75;
                 pivPos = 0.6;
+                rotPos = 0.5;
             } else {
-                straight();
-//                clawOpen();
+                specimenInit();
+
             }
             dPad = true;
         } else if (!gp2.dpad_down) {
@@ -184,8 +184,8 @@ public class EndEffector implements Subsystem {
     }
 
     public void rotate(Gamepad gp2) {
-        if (gp2.left_trigger > 0.8)  rotPos+=0.0075;
-        if (gp2.right_trigger > 0.8) rotPos-=0.0075;
+        if (gp2.left_trigger > 0.8)  rotPos+=0.015;
+        if (gp2.right_trigger > 0.8) rotPos-=0.015;
         clawRot.setPosition(rotPos);
     }
 

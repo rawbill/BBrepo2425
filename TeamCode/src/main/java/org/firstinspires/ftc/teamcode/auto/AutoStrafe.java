@@ -33,6 +33,7 @@ public class AutoStrafe extends LinearOpMode {
         boolean ran = false;
 
         io.init();
+        drivetrain.imu().resetYaw();
 
         // Wait for the game to start (driver presses START)
         while (!isStarted()) {
@@ -43,21 +44,21 @@ public class AutoStrafe extends LinearOpMode {
         runtime.reset();
 
         slides.setPivTarget(0);
-        io.outtakeInit();
+        io.straight();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             if (!ran && slides.pivMotor().getCurrentPosition() < 10) {
-                drivetrain.imu().resetYaw();
+
                 drivetrain.startEncoder();
 
-                io.outtakeInit();
+                io.straight();
 
-                drivetrain.encoderDriveRightInches(24);
+                drivetrain.encoderDriveRightInches(30);
                 drivetrain.imuCorrection(0, 0.4);
 
                 drivetrain.stopEncoder();
-                io.resetAuto();
+                io.straight();
                 ran = true;
             }
             slides.updatePiv();

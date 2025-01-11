@@ -5,6 +5,7 @@ import static java.lang.Thread.sleep;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -24,18 +25,23 @@ public class Drivetrain implements Subsystem {
 
     private final IMU imu;
 
+    private Timer timer;
+
     Telemetry telemetry;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;    // eg: GOBILDA Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 384.5 ;    // eg: GOBILDA Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_MM   = 96.0 ;     // For figuring circumference
     static final double     COUNTS_PER_MM         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_MM * 3.1415);
 
-    boolean rbPressed;
+    private int state;
+    private double distance;
 
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        timer = new Timer();
 
         lfMotor = map.get(DcMotorEx.class, "lfm");
         lbMotor = map.get(DcMotorEx.class, "lbm");
@@ -54,6 +60,130 @@ public class Drivetrain implements Subsystem {
         lbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rfMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void setState(int state, double distance) {
+        this.state = state;
+        this.distance = distance;
+    }
+
+    public boolean stateMachine() {
+
+        final int STILL = 0, FORWARD = 1, BACKWARD = 2, LEFT = 3, RIGHT = 4;
+
+        switch (state) {
+            case STILL:
+                lfMotor.setPower(0);
+                lbMotor.setPower(0);
+                rfMotor.setPower(0);
+                rbMotor.setPower(0);
+                lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                lfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                lbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                return true;
+            case FORWARD:
+                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
+                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-5)) {
+                        lfMotor.setPower(0.3);
+                        lbMotor.setPower(0.3);
+                        rfMotor.setPower(0.7);
+                        rbMotor.setPower(0.7);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (5)) {
+                        lfMotor.setPower(0.7);
+                        lbMotor.setPower(0.7);
+                        rfMotor.setPower(0.3);
+                        rbMotor.setPower(0.3);
+                    } else {
+                        lfMotor.setPower(0.5);
+                        lbMotor.setPower(0.5);
+                        rfMotor.setPower(0.5);
+                        rbMotor.setPower(0.5);
+                    }
+                    lfMotor.setPower(0.5);
+                    lbMotor.setPower(0.5);
+                    rfMotor.setPower(0.5);
+                    rbMotor.setPower(0.5);
+                    return false;
+                } else {
+                    setState(STILL, 0);
+                    return true;
+                }
+            case BACKWARD:
+                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
+                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
+                        lfMotor.setPower(-0.7);
+                        lbMotor.setPower(-0.7);
+                        rfMotor.setPower(-0.3);
+                        rbMotor.setPower(-0.3);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                        lfMotor.setPower(-0.3);
+                        lbMotor.setPower(-0.3);
+                        rfMotor.setPower(-0.7);
+                        rbMotor.setPower(-0.7);
+                    } else {
+                        lfMotor.setPower(-0.5);
+                        lbMotor.setPower(-0.5);
+                        rfMotor.setPower(-0.5);
+                        rbMotor.setPower(-0.5);
+                    }
+                    return false;
+                } else {
+                    setState(STILL, 0);
+                    return true;
+                }
+            case LEFT:
+                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
+                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
+                        lfMotor.setPower(0.3);
+                        lbMotor.setPower(-0.7);
+                        rfMotor.setPower(-0.3);
+                        rbMotor.setPower(0.7);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                        lfMotor.setPower(0.7);
+                        lbMotor.setPower(-0.3);
+                        rfMotor.setPower(-0.7);
+                        rbMotor.setPower(0.3);
+                    } else {
+                        lfMotor.setPower(0.5);
+                        lbMotor.setPower(-0.5);
+                        rfMotor.setPower(-0.5);
+                        rbMotor.setPower(0.5);
+                    }
+                    return false;
+                } else {
+                    setState(STILL, 0);
+                    return true;
+                }
+            case RIGHT:
+                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
+                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
+                        lfMotor.setPower(-0.7);
+                        lbMotor.setPower(0.3);
+                        rfMotor.setPower(0.7);
+                        rbMotor.setPower(-0.3);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                        lfMotor.setPower(-0.3);
+                        lbMotor.setPower(0.7);
+                        rfMotor.setPower(0.3);
+                        rbMotor.setPower(-0.7);
+                    } else {
+                        lfMotor.setPower(-0.5);
+                        lbMotor.setPower(0.5);
+                        rfMotor.setPower(0.5);
+                        rbMotor.setPower(-0.5);
+                    }
+                    return false;
+                } else {
+                    setState(STILL, 0);
+                    return true;
+                }
+            default: return false;
+        }
     }
 
     @Override
@@ -75,7 +205,7 @@ public class Drivetrain implements Subsystem {
 
     @Override
     public void update() {
-
+        stateMachine();
     }
 
     @Override
@@ -126,6 +256,44 @@ public class Drivetrain implements Subsystem {
         rfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    public boolean imuForwardInches(double inches) {
+        if (lfMotor.getCurrentPosition() < inches*COUNTS_PER_MM*25.4) {
+            if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
+                lfMotor.setPower(0.3);
+                lbMotor.setPower(0.3);
+                rfMotor.setPower(0.7);
+                rbMotor.setPower(0.7);
+            } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                lfMotor.setPower(0.7);
+                lbMotor.setPower(0.7);
+                rfMotor.setPower(0.3);
+                rbMotor.setPower(0.3);
+            } else {
+                lfMotor.setPower(0.5);
+                lbMotor.setPower(0.5);
+                rfMotor.setPower(0.5);
+                rbMotor.setPower(0.5);
+            }
+            return false;
+        } else {
+            lfMotor.setPower(0);
+            lbMotor.setPower(0);
+            rfMotor.setPower(0);
+            rbMotor.setPower(0);
+
+            lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            lbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            return true;
+        }
+    }
     public void encoderDriveForwardInches(double inches) throws InterruptedException {
         double TotalTicks = inches*COUNTS_PER_MM*25.4;
 
@@ -141,7 +309,7 @@ public class Drivetrain implements Subsystem {
         lbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rfMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sleep((long)(inches*25.4*2));
+        sleep((long)(inches*25.4*1.25));
         lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -162,7 +330,7 @@ public class Drivetrain implements Subsystem {
         lbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rfMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sleep((long)(inches*25.4*2));
+        sleep((long)(inches*25.4*1.25));
         lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -183,7 +351,7 @@ public class Drivetrain implements Subsystem {
         lbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rfMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sleep((long)(inches*25.4*2));
+        sleep((long)(inches*25.4*1.25));
         lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -204,7 +372,7 @@ public class Drivetrain implements Subsystem {
         lbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rfMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rbMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        sleep((long)(inches*25.4*2));
+        sleep((long)(inches*25.4*1.25));
         lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -228,19 +396,19 @@ public class Drivetrain implements Subsystem {
                         imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (directionDeg + margin))
         ) {
 
-            telemetry.addData("Yaw: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("yaw:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.update();
 
             if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (directionDeg - margin)) {
-                lfMotor.setPower(margin/2);
-                lbMotor.setPower(margin*-1/2);
-                rfMotor.setPower(margin*-1/2);
+                lfMotor.setPower(margin/-2);
+                lbMotor.setPower(margin/-2);
+                rfMotor.setPower(margin/2);
                 rbMotor.setPower(margin/2);
             } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (directionDeg + margin)) {
-                lfMotor.setPower(margin*-1/2);
+                lfMotor.setPower(margin/2);
                 lbMotor.setPower(margin/2);
-                rfMotor.setPower(margin/2);
-                rbMotor.setPower(margin*-1/2);
+                rfMotor.setPower(margin/-2);
+                rbMotor.setPower(margin/-2);
             } else {
                 lfMotor.setPower(0);
                 lbMotor.setPower(0);
