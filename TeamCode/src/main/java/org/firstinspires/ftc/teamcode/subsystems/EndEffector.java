@@ -8,6 +8,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -22,9 +23,9 @@ public class EndEffector implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.5, clawClose = 0.2;
+    public double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.2;
 
-    private boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, rdToggle = false;
+    public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, inv = false;
 
 
 
@@ -80,17 +81,22 @@ public class EndEffector implements Subsystem {
         timer.resetTimer();
     }
 
-    public void intake(Gamepad gp2) {
+    public void intake(Gamepad gp2, double ext) {
         rotate(gp2);
+
+        if (inv) {
+            gbPos = gbSetter(ext);
+            pivPos = pivSetter(ext);
+        }
+
         if (gp2.dpad_down && !dPad) {
 
             ddToggle = !ddToggle;
             if (ddToggle) {
-                gbPos = 1;
-                pivPos = 0.6;
+                straight();
+                inv = false;
             } else {
-                gbPos = 0.8;
-                pivPos = 0.7;
+                inv = true;
             }
             dPad = true;
 
@@ -108,20 +114,6 @@ public class EndEffector implements Subsystem {
             }
         } else if (!gp2.right_bumper) {
             rBump = false;
-        }
-
-        if (gp2.dpad_right && !rPad) {
-            rPad = true;
-            rdToggle = !rdToggle;
-            if (rdToggle) {
-                straight();
-                dPad = true;
-            } else {
-                dPad = false;
-                ddToggle = true;
-            }
-        } else if (!gp2.dpad_right) {
-            rPad = false;
         }
     }
 
@@ -215,5 +207,29 @@ public class EndEffector implements Subsystem {
 //        leftGb.setPower(-gp2.right_stick_y);
 //        rightGb.setPower(-gp2.right_stick_y);
 
+    }
+
+    public double gbSetter(double input) {
+        // Clip the input to the valid range [0, 600]
+        double clippedInput = Math.max(0, Math.min(input, 600));
+
+        // Calculate the mapped value directly
+        if (clippedInput >= 300) {
+            return 0.75 + (clippedInput - 300) * (0.05) / (300);
+        } else {
+            return 0.7 + (clippedInput) * (0.05) / (300);
+        }
+    }
+
+    public double pivSetter(double input) {
+        // Clip the input to the valid range [0, 600]
+        double clippedInput = Math.max(0, Math.min(input, 600));
+
+        // Calculate the mapped value directly
+        if (clippedInput >= 300) {
+            return 0.75 + (clippedInput - 300) * (-0.05) / (300);
+        } else {
+            return 0.8 + (clippedInput) * (-0.05) / (300);
+        }
     }
 }

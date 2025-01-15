@@ -23,7 +23,8 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     private int state;
 
     public static double pivInit = 650, pivDown = 1500, pivUp = 0;
-    public static double extIn = 0, extMid = 1600, extOut = 2375;
+    public static double extIn = 0, extMid = 300, extOut = 700;
+    public double ioStrPos = 600;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, specCtrl = false;
 
@@ -66,7 +67,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             io.update();
 
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
-            telemetry.addData("exrtPos ", slides.spools()[0].getCurrentPosition());
+            telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
+            telemetry.addData("gbSetter", io.gbSetter(slides.spools()[0].getCurrentPosition()));
+            telemetry.addData("gbPos", io.gbPos);
+            telemetry.addData("pivSetter", io.pivSetter(slides.spools()[0].getCurrentPosition()));
+            telemetry.addData("pivPos", io.pivPos);
 
             telemetry.update();
         }
@@ -82,6 +87,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             case INIT:
                 slides.setPivTarget(pivInit);
                 io.init();
+                io.clawClose();
                 slides.updatePiv();
                 // transitions
                 if (gamepad2.a && !aPressed) {
@@ -102,10 +108,14 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
                 if (timer() > 0.5) {
                     slides.setExtTarget(extMid);
-                    io.intake(gamepad2);
+                    io.intake(gamepad2, slides.spools()[0].getCurrentPosition());
                 }
                 slides.updateCtrls(gamepad1, gamepad2);
-                if (slides.spools()[0].getCurrentPosition() > 600) slides.setSlidePower(-0.1);
+//                if (io.ddToggle) {
+                    if (slides.spools()[0].getCurrentPosition() > 600) slides.setSlidePower(-0.3);
+//                } else {
+//                    if (slides.spools()[0].getCurrentPosition() > 800) slides.setSlidePower(-0.1);
+//                }
                 slides.updatePiv();
 //                slides.update();
 

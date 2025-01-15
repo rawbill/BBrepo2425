@@ -15,7 +15,7 @@ public class IntakeServoTesters extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            io.intake(gamepad2);
+
 
         }
     }
