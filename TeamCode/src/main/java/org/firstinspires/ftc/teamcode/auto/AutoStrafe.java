@@ -4,14 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.DR4B;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.EndEffector;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Outtake;
+import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
-import org.firstinspires.ftc.teamcode.subsystems.Slides_old;
-import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
 
 @Autonomous(name="StrafeAuto", group="Auto")
@@ -22,13 +17,13 @@ public class AutoStrafe extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
     Slides slides;
-    EndEffector io;
+    IO io;
 
     @Override
     public void runOpMode() throws InterruptedException {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
-        io = new EndEffector(hardwareMap, telemetry);
+        io = new IO(hardwareMap, telemetry);
 
         boolean ran = false;
 

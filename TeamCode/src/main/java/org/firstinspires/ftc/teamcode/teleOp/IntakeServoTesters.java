@@ -2,16 +2,15 @@ package org.firstinspires.ftc.teamcode.teleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.subsystems.EndEffector;
+import org.firstinspires.ftc.teamcode.subsystems.IO;
 
 @TeleOp
 public class IntakeServoTesters extends LinearOpMode {
-    public EndEffector io;
+    public IO io;
 
     public void runOpMode() {
-       io = new EndEffector(hardwareMap, telemetry);
+       io = new IO(hardwareMap, telemetry);
 
         waitForStart();
         while (opModeIsActive()) {

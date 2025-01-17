@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.EndEffector;
+import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 
@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.Slides;
 public class BBTele extends LinearOpMode {
     Drivetrain drive;
     Slides slides;
-    EndEffector IO;
+    org.firstinspires.ftc.teamcode.subsystems.IO IO;
     public void runOpMode() {
         drive = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
-        IO = new EndEffector(hardwareMap, telemetry);
+        IO = new IO(hardwareMap, telemetry);
         waitForStart();
         while(opModeIsActive()) {
             telemetry.addLine("BOOOO");

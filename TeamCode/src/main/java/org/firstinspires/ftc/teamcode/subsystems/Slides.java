@@ -23,7 +23,7 @@ public class Slides implements Subsystem {
     private PIDFController pivController;
     private PIDController extController;
 
-    public static double Kcos = 0.00001;
+    public static double Kcos = 0.001;
     public static double pivP = 0.00375, pivI = 0, pivD = 0.0001, pivF;
     public static double extP = 0.01, extI = 0, extD = 0.0001;
 
@@ -83,10 +83,6 @@ public class Slides implements Subsystem {
         telemetry.update();
     }
 
-    public void pivotSlides(double pow) {
-        slidePiv.setPower(pow);
-    }
-
    public void setPivTarget(double piv) {
         pivTarget = piv;
    }
@@ -106,7 +102,7 @@ public class Slides implements Subsystem {
 
    public void updateExt() {
        extController.setPID(extP, extI, extD);
-       double extPos = pivMotor().getCurrentPosition();
+       double extPos = spools()[0].getCurrentPosition();
        double extPid = extController.calculate(extPos, extTarget);
 
        spools()[0].setPower(extPid);
@@ -121,7 +117,7 @@ public class Slides implements Subsystem {
         double pivPid = extController.calculate(pivPos, pivTarget);
 
         extController.setPID(extP, extI, extD);
-        double extPos = pivMotor().getCurrentPosition();
+        double extPos = spools()[0].getCurrentPosition();
         double extPid = extController.calculate(extPos, extTarget);
 
         pivMotor().setPower(pivPid);

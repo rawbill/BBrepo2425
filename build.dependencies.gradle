@@ -3,8 +3,8 @@ repositories {
     google() // Needed for androidx
 
     maven { url = 'https://maven.brott.dev/' }
-    maven { url= 'https://maven.pedropathing.com/' }
-    maven { url 'https://jitpack.io' }
+    maven { url = 'https://maven.pedropathing.com/' }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
@@ -18,10 +18,10 @@ dependencies {
     implementation 'org.firstinspires.ftc:Vision:10.1.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
     implementation 'com.github.StateFactory-Dev:StateFactory:0.3.6'
 
-    implementation 'com.pedropathing:pedro:1.0.3'
+    implementation 'com.pedropathing:pedro:1.0.6'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
+
 }
 
