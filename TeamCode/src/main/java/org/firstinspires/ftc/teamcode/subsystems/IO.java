@@ -59,8 +59,8 @@ public class IO implements Subsystem {
     }
 
     public void spec4auto() {
-        gbPos = 0.75;
-        pivPos = 0.6;
+        gbPos = 0.8;
+        pivPos = 0.65;
         rotPos = 0.5;
     }
 
