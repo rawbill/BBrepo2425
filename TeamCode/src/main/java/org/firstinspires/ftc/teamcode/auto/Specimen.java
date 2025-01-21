@@ -298,7 +298,7 @@ public class Specimen  extends OpMode {
                         new Point(13.000, 24.000, Point.CARTESIAN)
                 )
         );
-        p12.setConstantHeadingInterpolation(Math.toRadians(0));
+        p13.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
         p14 = new Path(
