@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.teleOp.PivotSlidesTeleOp;
 
 @Config
 public class Slides implements Subsystem {
@@ -25,7 +26,8 @@ public class Slides implements Subsystem {
 
     public static double Kcos = 0.001;
     public static double pivP = 0.00375, pivI = 0, pivD = 0.0001, pivF;
-    public static double extP = 0.01, extI = 0, extD = 0.0001;
+    public static double extP = 0.015, extI = 0, extD = 0.000001;
+//    public static double extP = 0.01, extI = 0, extD = 0.0001;
 
     public static double pivTarget = 0;
     public static double extTarget = 0;
@@ -137,7 +139,21 @@ public class Slides implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        setSlidePower(-gp2.left_stick_y);
+        double power = -gp2.left_stick_y;
+        if (Math.abs(power) > 0.2) {
+            setSlidePower(-gp2.left_stick_y);
+            if (PivotSlidesTeleOp.state == 1) {
+                extTarget = Math.min(PivotSlidesTeleOp.intakeCap, lSpool.getCurrentPosition());
+            }
+            else {
+                extTarget = lSpool.getCurrentPosition();
+            }
+
+        }
+        else {
+            updateExt();
+        }
+
 //        setPivPower(gp2.right_stick_y);
     }
 }

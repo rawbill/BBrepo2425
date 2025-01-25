@@ -22,7 +22,7 @@ public class IO implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.25;
+    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.25;
 
     public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, inv = false;
 
@@ -57,6 +57,11 @@ public class IO implements Subsystem {
         pivPos = 0.45;
         rotPos = 0.5;
     }
+    public void upSub() {
+        gbPos = 0.45;
+        pivPos = 1;
+        rotPos = 0.5;
+    }
 
     public void spec4auto() {
         gbPos = 0.8;
@@ -68,8 +73,13 @@ public class IO implements Subsystem {
     public void clawOpen()  {clawPos = clawOpen;}
     public void clawClose() {clawPos = clawClose;}
 
+//    public void intakeInit() {
+//        straight();
+//        clawOpen();
+//        timer.resetTimer();
+//    }
     public void intakeInit() {
-        straight();
+        upSub();
         clawOpen();
         timer.resetTimer();
     }
@@ -86,7 +96,8 @@ public class IO implements Subsystem {
 
             ddToggle = !ddToggle;
             if (ddToggle) {
-                straight();
+                //straight();
+                upSub();
                 inv = false;
             } else {
                 inv = true;

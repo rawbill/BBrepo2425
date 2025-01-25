@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.teleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,15 +22,17 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     IO io;
 
     private Timer timer;
-    private int state;
+    public static int state;
 
     public static double pivInit = 600, pivDown = 1600, pivUp = 0, pivSpec = 600;
-    public static double extIn = 0, extMid = 600, extOut = 2500;
+    public static double extIn = 0, extMid = 400, extOut = 2500;
+    public static double intakeCap = 1000;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, dPad = false, ddToggle = false, specCtrl = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(), telemetry);
         drivetrain = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
         io = new IO(hardwareMap, telemetry);
@@ -66,6 +70,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             slides.updatePiv();
             io.update();
 
+            telemetry.addData("STATE", state);
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
             telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
             telemetry.addData("gbSetter", io.gbSetter(slides.spools()[0].getCurrentPosition()));
@@ -104,6 +109,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 if (timer() < 0.25) {
                     slides.setPivTarget(pivDown);
+                    slides.updatePiv();
                 }
                 if (timer() > 0.25 && timer() < 0.5) {
                     slides.setExtTarget(extMid);
@@ -112,7 +118,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
                 if (timer() > 0.5) {
                     slides.updateCtrls(gamepad1, gamepad2);
-                    if (slides.spools()[0].getCurrentPosition() > 600) slides.setSlidePower(-0.3);
+                    if (slides.spools()[0].getCurrentPosition() > intakeCap) slides.setSlidePower(-0.3);
                     io.intake(gamepad2, slides.spools()[0].getCurrentPosition());
                     slides.updatePiv();
                 }
@@ -123,7 +129,10 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 // transitions
                 if (gamepad2.a && !aPressed) {
                     aPressed = true;
-
+                    slides.setExtTarget(0);
+//                    while(slides.spools()[0].getCurrentPosition() > 100) {
+//                        drivetrain.updateCtrls(gamepad1, gamepad2);
+//                    }
                     setState(REST);
                     timer.resetTimer();
                 } else if (!gamepad2.a) {
@@ -131,7 +140,6 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
                 break;
             case REST:
-
                 slides.updateCtrls(gamepad1, gamepad2);
 
                 if (timer() < 0.25) {
@@ -152,6 +160,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 if (gamepad2.b && !bPressed) {
                     bPressed = true;
+                    slides.setExtTarget(0);
+                    while (slides.spools()[0].getCurrentPosition() > 100) {
+                        slides.updateExt();
+                        drivetrain.updateCtrls(gamepad1, gamepad2);
+                    }
                     setState(INTAKE);
                     timer.resetTimer();
                 } else if (!gamepad2.b) bPressed = false;
@@ -169,7 +182,6 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 } else if (!gamepad2.y) yPressed = false;
                 break;
             case OUTTAKE:
-
                 slides.setPivTarget(pivUp);
                 slides.setExtTarget(extOut);
                 io.outtake(gamepad2);
@@ -242,6 +254,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
                 if (gamepad2.b && !bPressed) {
                     bPressed = true;
+                    slides.setExtTarget(0);
+                    while (slides.spools()[0].getCurrentPosition() > 100) {
+                        slides.updateExt();
+                        drivetrain.updateCtrls(gamepad1, gamepad2);
+                    }
                     setState(INTAKE);
                     timer.resetTimer();
                 } else if (!gamepad2.b) bPressed = false;
