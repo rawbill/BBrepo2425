@@ -102,27 +102,26 @@ public class Slides implements Subsystem {
 
    public void updateExt() {
        extController.setPID(extP, extI, extD);
-       double extPos = spools()[0].getCurrentPosition();
+       int extPos = spools()[0].getCurrentPosition();
        double extPid = extController.calculate(extPos, extTarget);
 
-       spools()[0].setPower(extPid);
-       spools()[1].setPower(extPid);
+       setSlidePower(extPid);
    }
 
     @Override
     public void update() {
-        pivF = Math.cos(pivTarget) * Kcos;
+        pivF = Math.cos(pivTarget/85.0) * Kcos;
         pivController.setPIDF(pivP, pivI, pivD, pivF);
-        double pivPos = pivMotor().getCurrentPosition();
-        double pivPid = extController.calculate(pivPos, pivTarget);
+        int pivPos = pivMotor().getCurrentPosition();
+        double pivPid = pivController.calculate(pivPos, pivTarget);
 
         extController.setPID(extP, extI, extD);
-        double extPos = spools()[0].getCurrentPosition();
+        int extPos = spools()[0].getCurrentPosition();
         double extPid = extController.calculate(extPos, extTarget);
 
-        pivMotor().setPower(pivPid);
-        spools()[0].setPower(extPid);
-        spools()[1].setPower(extPid);
+        setPivPower(pivPid);
+
+        setSlidePower(extPid);
 
     }
 

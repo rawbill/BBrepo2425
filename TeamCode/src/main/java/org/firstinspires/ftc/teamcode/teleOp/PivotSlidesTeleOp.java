@@ -22,7 +22,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     private Timer timer;
     private int state;
 
-    public static double pivInit = 650, pivDown = 1550, pivUp = 0, pivSpec = 450;
+    public static double pivInit = 600, pivDown = 1600, pivUp = 0, pivSpec = 600;
     public static double extIn = 0, extMid = 600, extOut = 2500;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, dPad = false, ddToggle = false, specCtrl = false;
@@ -200,20 +200,20 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 if (timer.getElapsedTimeSeconds() > 0.5 && timer.getElapsedTimeSeconds() < 0.75) {
                     io.specimenInit();
                 }
-                if (gamepad2.dpad_down && !dPad) {
-                    ddToggle = !ddToggle;
-                    if (ddToggle) {
-                        io.straight();
-                        slides.setPivTarget(pivSpec);
-                    } else {
-                        slides.setPivTarget(pivUp);
-                        io.specimenInit();
-
-                    }
-                    dPad = true;
-                } else if (!gamepad2.dpad_down) {
-                    dPad = false;
-                }
+//                if (gamepad2.dpad_down && !dPad) {
+//                    ddToggle = !ddToggle;
+//                    if (ddToggle) {
+//                        io.straight();
+//                        slides.setPivTarget(pivSpec);
+//                    } else {
+//                        slides.setPivTarget(pivUp);
+//                        io.specimenInit();
+//
+//                    }
+//                    dPad = true;
+//                } else if (!gamepad2.dpad_down) {
+//                    dPad = false;
+//                }
 
                 if (gamepad2.right_bumper && !rBump) {
                     rBump = true;

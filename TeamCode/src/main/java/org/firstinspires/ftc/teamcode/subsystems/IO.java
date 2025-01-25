@@ -134,6 +134,7 @@ public class IO implements Subsystem {
     public void specimenInit() {
         gbPos = 0;
         pivPos = 0.075;
+//        ddToggle = false;
         clawOpen();
     }
 
@@ -154,9 +155,10 @@ public class IO implements Subsystem {
         if (gp2.dpad_down && !dPad) {
             ddToggle = !ddToggle;
             if (ddToggle) {
-                gbPos = 0.75;
-                pivPos = 0.6;
-                rotPos = 0.5;
+//                gbPos = 0.75;
+//                pivPos = 0.6;
+//                rotPos = 0.5;
+                spec4auto();
             } else {
                 specimenInit();
 
