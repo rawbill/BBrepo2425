@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 @Config
 @Autonomous (name = "5+0", group = "Auto")
-public class FiveSpecimen extends OpMode {
+public class Spec5 extends OpMode {
 
     private Telemetry telemetryA;
 
@@ -37,7 +37,7 @@ public class FiveSpecimen extends OpMode {
 
     private final Pose startPose = new Pose(12, 58, 0);
 
-    public static double pivInit = 600, pivDown = 1550, pivUp = 0, pivSpec = 400;
+    public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
     public static double extIn = 0, extMid = 600, extOut = 2500;
 
     public static double pickDelay = 1.5, scoreDelay = 2;
@@ -122,17 +122,17 @@ public class FiveSpecimen extends OpMode {
 
             if (specTimer() > 0 && specTimer() < delay) {
 
-                if (slides.spools()[0].getCurrentPosition() > 400) slides.setSlidePower(-0.2);
-                else slides.setSlidePower(0.5);
+                if (slides.spools()[0].getCurrentPosition() > 400) slides.setExtPower(-0.2);
+                else slides.setExtPower(0.5);
 
             }
 
             if (specTimer() > delay && specTimer() < delay + 1) {
 
                 if (slides.spools()[0].getCurrentPosition() < 75) {
-                    slides.setSlidePower(0);
+                    slides.setExtPower(0);
                 }
-                else slides.setSlidePower(-0.5);
+                else slides.setExtPower(-0.5);
                 io.clawClose();
 
             }
@@ -163,23 +163,23 @@ public class FiveSpecimen extends OpMode {
 
             if (specTimer() > delay && specTimer() < delay + 0.75) {
 
-                if (slides.spools()[0].getCurrentPosition() > 1000) slides.setSlidePower(-0.2);
-                else slides.setSlidePower(1);
+                if (slides.spools()[0].getCurrentPosition() > 1000) slides.setExtPower(-0.2);
+                else slides.setExtPower(1);
 
                 slides.setPivTarget(pivUp);
             }
 
             if (specTimer() > delay + 0.75) {
                 if (slides.spools()[0].getCurrentPosition() < 10) {
-                    slides.setSlidePower(0);
+                    slides.setExtPower(0);
                 }
-                else slides.setSlidePower(-1);
+                else slides.setExtPower(-1);
                 io.clawOpen();
                 bool = false;
             }
         }
         io.specimenInit();
-        slides.setSlidePower(-0.2);
+        slides.setExtPower(-0.2);
     }
 
     public void build_paths() {

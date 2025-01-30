@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.teleOp.PivotSlidesTeleOp;
 
 @Config
 public class Slides implements Subsystem {
@@ -21,21 +20,24 @@ public class Slides implements Subsystem {
     private DcMotorEx lSpool;
     private DcMotorEx rSpool;
 
-    private PIDFController pivController;
-    private PIDController extController;
+    public PIDFController pivController;
+    public PIDController extController;
 
-    public static double Kcos = 0.001;
-    public static double pivP = 0.00375, pivI = 0, pivD = 0.0001, pivF;
-    public static double extP = 0.015, extI = 0, extD = 0.000001;
-//    public static double extP = 0.01, extI = 0, extD = 0.0001;
+    public double Kcos = 0.001;
+    public double pivP = 0.005, pivI = 0, pivD = 0.0005, pivF;
+//    public static double extP = 0.01, extI = 0, extD = 0.000001;
+    public double extP = 0.01, extI = 0, extD = 0.0001;
 
-    public static double pivTarget = 0;
-    public static double extTarget = 0;
+    public double pivTarget = 0;
+    public double extTarget = 0;
 
     public Slides(HardwareMap map, Telemetry telemetry) {
 
-        pivController = new PIDController(pivP, pivTarget, pivD);
-        extController = new PIDController(extP, extTarget, extD);
+        pivController = new PIDController(pivP, pivI, pivD);
+        extController = new PIDController(extP, extI, extD);
+
+//        pivController.setTolerance(25);
+
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         slidePiv = map.get(DcMotorEx.class, "slidepiv");
@@ -63,7 +65,7 @@ public class Slides implements Subsystem {
         return slidePiv;
     }
 
-    public void setSlidePower(double power) {
+    public void setExtPower(double power) {
         lSpool.setPower(power);
         rSpool.setPower(power);
     }
@@ -94,7 +96,7 @@ public class Slides implements Subsystem {
    }
 
    public void updatePiv() {
-       pivF = Math.cos(pivTarget) * Kcos;
+       pivF = Math.cos(pivTarget/85) * Kcos;
        pivController.setPIDF(pivP, pivI, pivD, pivF);
        double pivPos = pivMotor().getCurrentPosition();
        double pivPid = extController.calculate(pivPos, pivTarget);
@@ -104,10 +106,10 @@ public class Slides implements Subsystem {
 
    public void updateExt() {
        extController.setPID(extP, extI, extD);
-       int extPos = spools()[0].getCurrentPosition();
+       double extPos = spools()[0].getCurrentPosition();
        double extPid = extController.calculate(extPos, extTarget);
 
-       setSlidePower(extPid);
+       setExtPower(extPid);
    }
 
     @Override
@@ -123,7 +125,7 @@ public class Slides implements Subsystem {
 
         setPivPower(pivPid);
 
-        setSlidePower(extPid);
+        setExtPower(extPid);
 
     }
 
@@ -139,21 +141,7 @@ public class Slides implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        double power = -gp2.left_stick_y;
-        if (Math.abs(power) > 0.2) {
-            setSlidePower(-gp2.left_stick_y);
-            if (PivotSlidesTeleOp.state == 1) {
-                extTarget = Math.min(PivotSlidesTeleOp.intakeCap, lSpool.getCurrentPosition());
-            }
-            else {
-                extTarget = lSpool.getCurrentPosition();
-            }
 
-        }
-        else {
-            updateExt();
-        }
-
-//        setPivPower(gp2.right_stick_y);
+        setExtPower(-gp2.left_stick_y);
     }
 }

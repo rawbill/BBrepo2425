@@ -5,7 +5,6 @@ import static java.lang.Thread.sleep;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -15,6 +14,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 public class Drivetrain implements Subsystem {
 
@@ -210,22 +210,33 @@ public class Drivetrain implements Subsystem {
 
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        double y = -gp1.left_stick_y; // Remember, Y stick value is reversed
-        double x =  gp1.left_stick_x;
-        double rx = gp1.right_stick_x;
-
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double lfPower = (y + x + rx) / denominator;
-        double lbPower = (y - x + rx) / denominator;
-        double rfPower = (y - x - rx) / denominator;
-        double rbPower = (y + x - rx) / denominator;
 
         if (gp1.right_trigger > 0.1) {
-            lfMotor.setPower(lfPower * 0.2);
-            lbMotor.setPower(lbPower * 0.2);
-            rfMotor.setPower(rfPower * 0.2);
-            rbMotor.setPower(rbPower * 0.2);
+            double y = -gp1.left_stick_y * 0.2; // Remember, Y stick value is reversed
+            double x =  gp1.left_stick_x * 0.4;
+            double rx = gp1.right_stick_x * 0.2;
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double lfPower = (y + x + rx) / denominator;
+            double lbPower = (y - x + rx) / denominator;
+            double rfPower = (y - x - rx) / denominator;
+            double rbPower = (y + x - rx) / denominator;
+
+            lfMotor.setPower(lfPower);
+            lbMotor.setPower(lbPower);
+            rfMotor.setPower(rfPower);
+            rbMotor.setPower(rbPower);
         } else {
+            double y = -gp1.left_stick_y; // Remember, Y stick value is reversed
+            double x =  gp1.left_stick_x;
+            double rx = gp1.right_stick_x;
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double lfPower = (y + x + rx) / denominator;
+            double lbPower = (y - x + rx) / denominator;
+            double rfPower = (y - x - rx) / denominator;
+            double rbPower = (y + x - rx) / denominator;
+
             lfMotor.setPower(lfPower);
             lbMotor.setPower(lbPower);
             rfMotor.setPower(rfPower);

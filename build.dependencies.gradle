@@ -20,7 +20,7 @@ dependencies {
 
     implementation 'com.github.StateFactory-Dev:StateFactory:0.3.6'
 
-    implementation 'com.pedropathing:pedro:1.0.6'
+//    implementation 'com.pedropathing:pedro:1.0.6'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
 
 }

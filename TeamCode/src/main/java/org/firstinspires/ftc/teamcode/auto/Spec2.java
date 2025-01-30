@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -18,8 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 @Config
-@Autonomous (name = "1+0", group = "Auto")
-public class OneSpecimen extends OpMode {
+@Autonomous (name = "2+0", group = "Auto")
+public class Spec2 extends OpMode {
 
     private Telemetry telemetryA;
 
@@ -32,14 +31,14 @@ public class OneSpecimen extends OpMode {
 
     private int autoState;
 
-    private Path p1, p2;
+    private Path p1, p2, p3, p4;
 
-    private final Pose startPose = new Pose(12, 58, 0);
+    private final Pose startPose = new Pose(8, 56, 0);
 
-    public static double pivInit = 600, pivDown = 1550, pivUp = 0, pivSpec = 400;
+    public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
     public static double extIn = 0, extMid = 600, extOut = 2500;
 
-    public static double pickDelay = 1.5, scoreDelay = 2;
+    public double extSpecI = 150, extSpecO = 1500;
 
     public boolean bool = false;
 
@@ -63,6 +62,8 @@ public class OneSpecimen extends OpMode {
         f.setStartingPose(startPose);
 
         slides.setPivTarget(pivInit);
+        slides.setExtTarget(extIn);
+
         io.init();
         io.clawClose();
 
@@ -70,7 +71,7 @@ public class OneSpecimen extends OpMode {
 
     @Override
     public void init_loop() {
-        slides.updatePiv();
+        slides.update();
         io.update();
         telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
         telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
@@ -92,7 +93,7 @@ public class OneSpecimen extends OpMode {
         f.update();
         autoUpdate();
 
-        slides.updatePiv();
+        slides.update();
         io.update();
 
         telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
@@ -106,47 +107,28 @@ public class OneSpecimen extends OpMode {
     public double pathTimer() { return pathTimer.getElapsedTimeSeconds(); }
     public double specTimer() { return specTimer.getElapsedTimeSeconds(); }
 
-    public void pick( double delay) {
+    public void pick(Path p, double d) {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivUp);
+            slides.setExtTarget(extSpecI);
             io.specimenInit();
 
             bool = true;
         }
 
-        while (bool) {
+        if (p.isAtParametricEnd()) {
+            io.clawClose();
+        }
 
-            f.update();
-            slides.updatePiv();
-            io.update();
-
-            if (specTimer() > 0 && specTimer() < delay) {
-
-                if (slides.spools()[0].getCurrentPosition() > 400) slides.setSlidePower(-0.2);
-                else slides.setSlidePower(0.5);
-
-            }
-
-            if (specTimer() > delay && specTimer() < delay + 1) {
-
-                if (slides.spools()[0].getCurrentPosition() < 75) {
-                    slides.setSlidePower(0);
-                }
-                else slides.setSlidePower(-0.5);
-                io.clawClose();
-
-            }
-
-            if (specTimer() > delay + 0.5) {
-
-                bool = false;
-            }
+        if (specTimer() > d) {
+            bool = false;
+            setState(autoState+1);
         }
     }
 
-    public void score(double delay) {
 
+    public void score(Path p, double d) {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivUp);
@@ -155,41 +137,24 @@ public class OneSpecimen extends OpMode {
             bool = true;
         }
 
-        while (bool) {
+        if (p.isAtParametricEnd()) {
+            slides.setExtTarget(extSpecO);
 
-            f.update();
-            slides.updatePiv();
-            io.update();
-
-
-            if (specTimer() > delay && specTimer() < delay + 1.5) {
-
-                if (slides.spools()[0].getCurrentPosition() > 1200) slides.setSlidePower(-0.2);
-                else slides.setSlidePower(1);
-
-                slides.setPivTarget(pivUp);
-            }
-
-            if (specTimer() > delay + 1.5) {
-                if (slides.spools()[0].getCurrentPosition() < 10) {
-                    slides.setSlidePower(0);
-                }
-                else slides.setSlidePower(-1);
-                io.clawOpen();
-                bool = false;
-            }
         }
-        io.specimenInit();
-        slides.setSlidePower(-0.2);
+
+        if (specTimer() > d) {
+            slides.setExtTarget(extSpecI);
+            io.clawOpen();
+            bool = false;
+            setState(autoState+1);
+        }
     }
 
     public void build_paths() {
         p1 = new Path(
-                new BezierCurve(
-                        new Point(12.000, 58.000, Point.CARTESIAN),
-                        new Point(20.000, 58.000, Point.CARTESIAN),
-                        new Point(30.000, 68.000, Point.CARTESIAN),
-                        new Point(36.000, 64.000, Point.CARTESIAN)
+                new BezierLine(
+                        new Point(8.000, 56.000, Point.CARTESIAN),
+                        new Point(43.000, 66.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -197,11 +162,27 @@ public class OneSpecimen extends OpMode {
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(36.000, 64.000, Point.CARTESIAN),
-                        new Point(18.000, 35.000, Point.CARTESIAN)
+                        new Point(43.000, 66.000, Point.CARTESIAN),
+                        new Point(9.000, 24.000, Point.CARTESIAN)
                 )
         );
-        p2.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0));
+        p2.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p3 = new Path(
+                new BezierLine(
+                        new Point(9.000, 24.000, Point.CARTESIAN),
+                        new Point(43.000, 68.000, Point.CARTESIAN)
+                )
+        );
+        p3.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p4 = new Path(
+                new BezierLine(
+                        new Point(43.000, 68.000, Point.CARTESIAN),
+                        new Point(10.000, 20.000, Point.CARTESIAN)
+                )
+        );
+        p4.setConstantHeadingInterpolation(Math.toRadians(0));
 
     }
 
@@ -214,16 +195,37 @@ public class OneSpecimen extends OpMode {
                 break;
 
             case 2:
-                score(0.7);
-                if (p1.isAtParametricEnd() || pathTimer() > 5) {
-                    f.followPath(p2, true);
-                    setState(3);
-                }
+                score(p1, 2);
                 break;
             case 3:
-                slides.setPivTarget(pivUp);
+                if (p1.isAtParametricEnd()) {
+                    f.followPath(p2, true);
+                    setState(4);
+                }
+                break;
+            case 4:
+                pick(p2, 3);
+                break;
+            case 5:
+                if (p2.isAtParametricEnd()) {
+                    f.followPath(p3, true);
+                    setState(6);
+                }
+                break;
+            case 6:
+                score(p3, 2.5);
+                break;
+            case 7:
+                if (p3.isAtParametricEnd()) {
+                    f.followPath(p4);
+                    setState(8);
+                }
+                break;
+            case 8:
+                slides.setExtTarget(extIn);
                 io.straight();
                 break;
+
 
         }
     }

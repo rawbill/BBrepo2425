@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
-import com.arcrobotics.ftclib.controller.wpilibcontroller.ArmFeedforward;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -27,8 +26,8 @@ public class SlidesPid extends LinearOpMode {
     public static double pivP = 0.00375, pivI = 0, pivD = 0.0001, pivF;
     public static double extP = 0.01, extI = 0, extD = 0.0001;
 
-    public static int pivTarget = 0;
-    public static int extTarget = 0;
+    public static double pivTarget = 0;
+    public static double extTarget = 0;
 
     Slides slides;
 
@@ -44,7 +43,7 @@ public class SlidesPid extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            pivF = Math.cos(pivTarget) * Kcos;
+            pivF = Math.cos(pivTarget/85) * Kcos;
             pivController.setPIDF(pivP, pivI, pivD, pivF);
             int pivPos = slides.pivMotor().getCurrentPosition();
             double pivPid = pivController.calculate(pivPos, pivTarget);
@@ -55,7 +54,7 @@ public class SlidesPid extends LinearOpMode {
 
             slides.setPivPower(pivPid);
 
-            slides.setSlidePower(extPid);
+            slides.setExtPower(extPid);
 
 
             telemetry.addData("pivPos ", pivPos);

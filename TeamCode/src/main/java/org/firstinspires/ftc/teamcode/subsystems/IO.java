@@ -4,12 +4,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.pedropathing.util.Timer;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @Config
 public class IO implements Subsystem {
@@ -24,7 +25,9 @@ public class IO implements Subsystem {
 
     public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.25;
 
-    public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, inv = false;
+    public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, lPad = false, inv = false;
+
+    public double invOffset = 0;
 
 
 
@@ -54,7 +57,7 @@ public class IO implements Subsystem {
 
     public void straight() {
         gbPos = 0.55;
-        pivPos = 0.45;
+        pivPos = 0.5;
         rotPos = 0.5;
     }
     public void upSub() {
@@ -88,9 +91,29 @@ public class IO implements Subsystem {
         rotate(gp2);
 
         if (inv) {
-            gbPos = gbSetter(ext);
-            pivPos = pivSetter(ext);
+            gbPos = gbSetter(ext, invOffset);
+            pivPos = pivSetter(ext, invOffset);
         }
+
+        if (gp2.dpad_right && !rPad) {
+
+            invOffset += 0.025;
+            rPad = true;
+
+        } else if (!gp2.dpad_right) {
+            rPad = false;
+        }
+
+        if (gp2.dpad_left && !lPad) {
+
+            invOffset -= 0.025;
+            lPad = true;
+
+        } else if (!gp2.dpad_left) {
+            lPad = false;
+        }
+
+
 
         if (gp2.dpad_down && !dPad) {
 
@@ -215,27 +238,19 @@ public class IO implements Subsystem {
 
     }
 
-    public double gbSetter(double input) {
-        // Clip the input to the valid range [0, 600]
-        double clippedInput = Math.max(0, Math.min(input, 600));
+    public double gbSetter(double input, double offset) {
+        // Clip the input to the valid range [0, 1000]
+        double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        if (clippedInput >= 300) {
-            return 0.775 + (clippedInput - 300) * (0.05) / (300);
-        } else {
-            return 0.725 + (clippedInput) * (0.05) / (300);
-        }
+        return offset + 0.775 + (clippedInput - 0) * (0.95 - 0.775) / (1000 - 0);
     }
 
-    public double pivSetter(double input) {
-        // Clip the input to the valid range [0, 600]
-        double clippedInput = Math.max(0, Math.min(input, 600));
+    public double pivSetter(double input, double offset) {
+        // Clip the input to the valid range [0, 1000]
+        double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        if (clippedInput >= 300) {
-            return 0.75 + (clippedInput - 300) * (-0.05) / (300);
-        } else {
-            return 0.8 + (clippedInput) * (-0.05) / (300);
-        }
+        return -offset + 0.775 + (clippedInput - 0) * (0.675 - 0.775) / (1000 - 0);
     }
 }
