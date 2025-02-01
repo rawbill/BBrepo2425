@@ -23,7 +23,7 @@ public class IO implements Subsystem {
 
     private Timer timer = new Timer();
 
-    public static double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.25;
+    public double gbPos, pivPos, rotPos = 0.5, clawPos, clawOpen = 0.65, clawClose = 0.25;
 
     public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, lPad = false, inv = false;
 
@@ -68,7 +68,7 @@ public class IO implements Subsystem {
 
     public void spec4auto() {
         gbPos = 0.8;
-        pivPos = 0.65;
+        pivPos = 0.7;
         rotPos = 0.5;
     }
 

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -110,7 +111,6 @@ public class Spec1 extends OpMode {
 
     public void score(Path p) {
         if (!bool) {
-            specTimer.resetTimer();
             slides.setPivTarget(pivUp);
             io.spec4auto();
 
@@ -119,10 +119,11 @@ public class Spec1 extends OpMode {
 
         if (p.isAtParametricEnd()) {
             slides.setExtTarget(extSpec);
+            specTimer.resetTimer();
 
         }
 
-        if (specTimer() > 2) {
+        if (specTimer() > 2.5) {
             slides.setExtTarget(extIn);
             io.clawOpen();
             bool = false;
@@ -132,9 +133,10 @@ public class Spec1 extends OpMode {
 
     public void build_paths() {
         p1 = new Path(
-                new BezierLine(
+                new BezierCurve(
                         new Point(8.000, 56.000, Point.CARTESIAN),
-                        new Point(43.000, 66.000, Point.CARTESIAN)
+                        new Point(18.000, 70.000, Point.CARTESIAN),
+                        new Point(42.000, 68.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -142,7 +144,7 @@ public class Spec1 extends OpMode {
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(43.000, 66.000, Point.CARTESIAN),
+                        new Point(42.000, 68.000, Point.CARTESIAN),
                         new Point(10.000, 20.000, Point.CARTESIAN)
                 )
         );

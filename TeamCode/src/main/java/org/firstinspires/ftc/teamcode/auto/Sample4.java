@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
 @Config
-@Autonomous (name = "2+0", group = "Auto")
-public class Spec2 extends OpMode {
+@Autonomous (name = "0+4", group = "Auto")
+public class Sample4 extends OpMode {
 
     private Telemetry telemetryA;
 
@@ -32,14 +32,14 @@ public class Spec2 extends OpMode {
 
     private int autoState;
 
-    private Path p1, p2, p3, p4;
+    private Path p1, p2, p3, p4, p5, p6, p7, p8;
 
-    private final Pose startPose = new Pose(8, 56, 0);
+    private final Pose startPose = new Pose(8, 104, 0);
 
     public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
     public static double extIn = 0, extMid = 600, extOut = 2500;
 
-    public double extSpecI = 150, extSpecO = 1500;
+    public double extSpec = 1500;
 
     public boolean bool = false;
 
@@ -61,6 +61,7 @@ public class Spec2 extends OpMode {
         build_paths();
 
         f.setStartingPose(startPose);
+        f.setMaxPower(1);
 
         slides.setPivTarget(pivInit);
         slides.setExtTarget(extIn);
@@ -108,84 +109,124 @@ public class Spec2 extends OpMode {
     public double pathTimer() { return pathTimer.getElapsedTimeSeconds(); }
     public double specTimer() { return specTimer.getElapsedTimeSeconds(); }
 
-    public void pick(Path p, double d) {
+    public void pick(double d, boolean rotate) {
         if (!bool) {
             specTimer.resetTimer();
-            slides.setPivTarget(pivUp);
-            slides.setExtTarget(extSpecI);
-            io.specimenInit();
+            slides.setExtTarget(extIn);
+            slides.setPivTarget(pivDown);
+            io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0);
+            io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0);
+
+            if (rotate) io.rotPos = 0.8;
+            else io.rotPos = 0.5;
 
             bool = true;
         }
 
-        if (p.isAtParametricEnd()) {
-            io.clawClose();
-        }
-
         if (specTimer() > d) {
+            io.clawClose();
+            slides.setPivTarget(pivUp);
+
             bool = false;
+
             setState(autoState+1);
         }
     }
 
-
-    public void score(Path p, double d) {
+    public void score(double d) {
         if (!bool) {
+            specTimer.resetTimer();
             slides.setPivTarget(pivUp);
-            io.spec4auto();
+            io.outtakeInit();
 
             bool = true;
         }
 
-        if (p.isAtParametricEnd()) {
-            slides.setExtTarget(extSpecO);
-            specTimer.resetTimer();
+        if (bool) {
+            slides.setExtTarget(extOut);
 
         }
 
-        if (specTimer() > d) {
-            slides.setExtTarget(extSpecI);
+        if (specTimer() > d-0.5) {
             io.clawOpen();
+        }
+
+        if (specTimer() > d) {
+            slides.setExtTarget(extIn);
+
             bool = false;
+
             setState(autoState+1);
         }
     }
 
     public void build_paths() {
         p1 = new Path(
-                new BezierCurve(
-                        new Point(8.000, 56.000, Point.CARTESIAN),
-                        new Point(18.000, 70.000, Point.CARTESIAN),
-                        new Point(42.000, 68.000, Point.CARTESIAN)
+                new BezierLine(
+                        new Point(8.000, 104.000, Point.CARTESIAN),
+                        new Point(13.000, 131.000, Point.CARTESIAN)
                 )
         );
-        p1.setConstantHeadingInterpolation(Math.toRadians(0));
+        p1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
 
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(42.000, 68.000, Point.CARTESIAN),
-                        new Point(9.000, 23.000, Point.CARTESIAN)
+                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(30.000, 121.000, Point.CARTESIAN)
                 )
         );
-        p2.setConstantHeadingInterpolation(Math.toRadians(0));
+        p2.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0));
 
         p3 = new Path(
                 new BezierLine(
-                        new Point(9.000, 23.000, Point.CARTESIAN),
-                        new Point(42.000, 70.000, Point.CARTESIAN)
-
+                        new Point(30.000, 121.000, Point.CARTESIAN),
+                        new Point(13.000, 131.000, Point.CARTESIAN)
                 )
         );
-        p3.setConstantHeadingInterpolation(Math.toRadians(0));
+        p3.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
 
         p4 = new Path(
                 new BezierLine(
-                        new Point(42.000, 70.000, Point.CARTESIAN),
-                        new Point(10.000, 20.000, Point.CARTESIAN)
+                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(30.000, 132.000, Point.CARTESIAN)
                 )
         );
-        p4.setConstantHeadingInterpolation(Math.toRadians(0));
+        p4.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0));
+
+        p5 = new Path(
+                new BezierLine(
+                        new Point(30.000, 132.000, Point.CARTESIAN),
+                        new Point(13.000, 131.000, Point.CARTESIAN)
+                )
+        );
+        p5.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
+
+        p6 = new Path(
+                new BezierLine(
+                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(45.500, 129.000, Point.CARTESIAN)
+                )
+        );
+        p6.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90));
+
+        p7 = new Path(
+                new BezierLine(
+                        new Point(45.500, 129.000, Point.CARTESIAN),
+                        new Point(13.000, 131.000, Point.CARTESIAN)
+                )
+        );
+        p7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-45));
+
+        p8 = new Path(
+                new BezierLine(
+                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(68.000, 100.000, Point.CARTESIAN)
+                )
+        );
+        p8.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90));
+
+
 
     }
 
@@ -198,7 +239,7 @@ public class Spec2 extends OpMode {
                 break;
 
             case 2:
-                score(p1, 2.5);
+                score(4);
                 break;
             case 3:
                 if (p1.isAtParametricEnd()) {
@@ -207,7 +248,7 @@ public class Spec2 extends OpMode {
                 }
                 break;
             case 4:
-                pick(p2, 3);
+                pick(1, false);
                 break;
             case 5:
                 if (p2.isAtParametricEnd()) {
@@ -216,19 +257,53 @@ public class Spec2 extends OpMode {
                 }
                 break;
             case 6:
-                score(p3, 2.5);
+                score(4);
                 break;
             case 7:
                 if (p3.isAtParametricEnd()) {
-                    f.followPath(p4);
+                    f.followPath(p4, true);
                     setState(8);
                 }
                 break;
             case 8:
-                slides.setExtTarget(extIn);
-                io.straight();
+                pick(1, false);
                 break;
-
+            case 9:
+                if (p4.isAtParametricEnd()) {
+                    f.followPath(p5, true);
+                    setState(10);
+                }
+                break;
+            case 10:
+                score(4);
+                break;
+            case 11:
+                if (p5.isAtParametricEnd()) {
+                    f.followPath(p6, true);
+                    setState(12);
+                }
+                break;
+            case 12:
+                pick(1, true);
+                break;
+            case 13:
+                if (p6.isAtParametricEnd()) {
+                    f.followPath(p7, true);
+                    setState(14);
+                }
+                break;
+            case 14:
+                score(4);
+                break;
+            case 15:
+                if (p7.isAtParametricEnd()) {
+                    f.followPath(p8, true);
+                    setState(16);
+                }
+                break;
+            case 16:
+                io.outtakeInit();
+                break;
 
         }
     }
