@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
 @Config
-@TeleOp(name="PivotSlidesTeleOp", group="A")
+@TeleOp(name="PivotSlidesTeleOp", group=" ")
 public class PivotSlidesTeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();

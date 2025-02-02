@@ -57,7 +57,7 @@ public class IO implements Subsystem {
 
     public void straight() {
         gbPos = 0.55;
-        pivPos = 0.5;
+        pivPos = 0.6;
         rotPos = 0.5;
     }
     public void upSub() {
@@ -168,7 +168,7 @@ public class IO implements Subsystem {
     public void specimenInit() {
         gbPos = 0;
         pivPos = 0.075;
-//        ddToggle = false;
+        ddToggle = false;
         clawOpen();
     }
 
@@ -243,7 +243,7 @@ public class IO implements Subsystem {
         double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        return offset + 0.775 + (clippedInput - 0) * (0.95 - 0.775) / (1000 - 0);
+        return offset + 0.75 + (clippedInput - 0) * (1 - 0.75) / (1000 - 0);
     }
 
     public double pivSetter(double input, double offset) {
@@ -251,6 +251,6 @@ public class IO implements Subsystem {
         double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        return -offset + 0.775 + (clippedInput - 0) * (0.675 - 0.775) / (1000 - 0);
+        return -offset + 0.8 + (clippedInput - 0) * (0.625 - 0.8) / (1000 - 0);
     }
 }
