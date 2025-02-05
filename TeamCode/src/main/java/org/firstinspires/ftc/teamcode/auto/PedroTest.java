@@ -10,12 +10,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Point;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.DR4B;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;

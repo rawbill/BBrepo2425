@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
@@ -149,10 +149,10 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 //                    slides.setExtTarget(extIn);
 //                    slides.update();
                 }
-                if (timer() > 0.25 && timer() < 1) {
+                if (timer() > 0.25 && timer() < 0.5) {
                     slides.setPivTarget(pivUp);
                 }
-                if (timer() > 1) {
+                if (timer() > 0.5) {
                     slides.setPivTarget(pivUp);
                 }
                 slides.updatePiv();
@@ -205,16 +205,16 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
 
 //                slides.setExtTarget(extIn);
-                if (timer.getElapsedTimeSeconds() < 0.5) {
+                if (timer.getElapsedTimeSeconds() < 0.125) {
                     io.clawOpen();
                     dPad = false;
                     ddToggle = false;
                     rBump = false;
                 }
-                if (timer.getElapsedTimeSeconds() > 0.5 && timer.getElapsedTimeSeconds() < 0.75) {
+                if (timer.getElapsedTimeSeconds() > 0.125 && timer.getElapsedTimeSeconds() < 0.25) {
                     io.specimenInit();
                 }
-                if (timer.getElapsedTimeSeconds() > 0.75) {
+                if (timer.getElapsedTimeSeconds() > 0.25) {
                     io.specimen(gamepad2);
                 }
 
