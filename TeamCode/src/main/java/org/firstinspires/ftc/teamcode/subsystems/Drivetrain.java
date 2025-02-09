@@ -138,38 +138,15 @@ public class Drivetrain implements Subsystem {
             case LEFT:
                 if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
                     if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
-                        lfMotor.setPower(0.3);
-                        lbMotor.setPower(-0.7);
-                        rfMotor.setPower(-0.3);
-                        rbMotor.setPower(0.7);
-                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
-                        lfMotor.setPower(0.7);
-                        lbMotor.setPower(-0.3);
-                        rfMotor.setPower(-0.7);
-                        rbMotor.setPower(0.3);
-                    } else {
-                        lfMotor.setPower(0.5);
-                        lbMotor.setPower(-0.5);
-                        rfMotor.setPower(-0.5);
-                        rbMotor.setPower(0.5);
-                    }
-                    return false;
-                } else {
-                    setState(STILL, 0);
-                    return true;
-                }
-            case RIGHT:
-                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
-                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
-                        lfMotor.setPower(-0.7);
-                        lbMotor.setPower(0.3);
-                        rfMotor.setPower(0.7);
-                        rbMotor.setPower(-0.3);
-                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
                         lfMotor.setPower(-0.3);
                         lbMotor.setPower(0.7);
                         rfMotor.setPower(0.3);
                         rbMotor.setPower(-0.7);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                        lfMotor.setPower(-0.7);
+                        lbMotor.setPower(0.3);
+                        rfMotor.setPower(0.7);
+                        rbMotor.setPower(-0.3);
                     } else {
                         lfMotor.setPower(-0.5);
                         lbMotor.setPower(0.5);
@@ -181,7 +158,30 @@ public class Drivetrain implements Subsystem {
                     setState(STILL, 0);
                     return true;
                 }
-            default: return false;
+            case RIGHT:
+                if (lfMotor.getCurrentPosition() < distance*COUNTS_PER_MM*25.4) {
+                    if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < (-0.5)) {
+                        lfMotor.setPower(0.7);
+                        lbMotor.setPower(-0.3);
+                        rfMotor.setPower(-0.7);
+                        rbMotor.setPower(0.3);
+                    } else if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > (0.5)) {
+                        lfMotor.setPower(0.3);
+                        lbMotor.setPower(-0.7);
+                        rfMotor.setPower(-0.3);
+                        rbMotor.setPower(0.7);
+                    } else {
+                        lfMotor.setPower(0.5);
+                        lbMotor.setPower(-0.5);
+                        rfMotor.setPower(-0.5);
+                        rbMotor.setPower(0.5);
+                    }
+                    return false;
+                } else {
+                    setState(STILL, 0);
+                    return true;
+                }
+            default: return true;
         }
     }
 

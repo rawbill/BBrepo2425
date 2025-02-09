@@ -5,12 +5,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierLine;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
@@ -32,7 +34,7 @@ public class Spec1 extends OpMode {
 
     private int autoState;
 
-    private Path p1, p2;
+    private Path p1, p2, p3;
 
     private final Pose startPose = new Pose(8, 56, 0);
 
@@ -101,6 +103,7 @@ public class Spec1 extends OpMode {
         telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
         f.telemetryDebug(telemetryA);
 
+
     }
 
     public void setState(int state) { autoState = state; }
@@ -113,13 +116,13 @@ public class Spec1 extends OpMode {
         if (!bool) {
             slides.setPivTarget(pivUp);
             io.spec4auto();
+            specTimer.resetTimer();
 
             bool = true;
         }
 
-        if (p.isAtParametricEnd()) {
+        if (p.isAtParametricEnd() || (specTimer() > 1.5 && specTimer() < 2.5)) {
             slides.setExtTarget(extSpec);
-            specTimer.resetTimer();
 
         }
 
@@ -133,10 +136,9 @@ public class Spec1 extends OpMode {
 
     public void build_paths() {
         p1 = new Path(
-                new BezierCurve(
+                new BezierLine(
                         new Point(8.000, 56.000, Point.CARTESIAN),
-                        new Point(18.000, 70.000, Point.CARTESIAN),
-                        new Point(42.000, 68.000, Point.CARTESIAN)
+                        new Point(8.000, 67.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -144,11 +146,19 @@ public class Spec1 extends OpMode {
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(42.000, 68.000, Point.CARTESIAN),
-                        new Point(10.000, 20.000, Point.CARTESIAN)
+                        new Point(8.000, 67.000, Point.CARTESIAN),
+                        new Point(35.000, 67.000, Point.CARTESIAN)
                 )
         );
         p2.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p3 = new Path(
+                new BezierLine(
+                        new Point(35.000, 67.000, Point.CARTESIAN),
+                        new Point(15.000, 45.000, Point.CARTESIAN)
+                )
+        );
+        p3.setConstantHeadingInterpolation(Math.toRadians(0));
 
     }
 
@@ -159,18 +169,26 @@ public class Spec1 extends OpMode {
                 f.followPath(p1, true);
                 setState(2);
                 break;
-
             case 2:
-                score(p1);
-                break;
-            case 3:
-                if (p1.isAtParametricEnd() || pathTimer() > 5) {
+                if (p1.isAtParametricEnd()) {
                     f.followPath(p2, true);
-                    setState(4);
+                    setState(3);
                 }
                 break;
+            case 3:
+                score(p2);
+                break;
             case 4:
+//                if (p2.isAtParametricEnd()) {
+                    f.followPath(p3, true);
+                    pathTimer.resetTimer();
+                    setState(5);
+//                }
+                break;
+            case 5:
                 io.straight();
+                if (pathTimer() > 2.5)
+                    f.holdPoint(new BezierPoint(new Point(f.getPose().getX(), f.getPose().getY())), Math.toRadians(0));
                 break;
 
         }

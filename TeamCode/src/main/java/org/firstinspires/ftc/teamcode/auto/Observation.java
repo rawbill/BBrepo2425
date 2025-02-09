@@ -101,7 +101,7 @@ public class Observation extends OpMode {
         p1 = new Path(
                 new BezierLine(
                         new Point(8.000, 56.000, Point.CARTESIAN),
-                        new Point(10.000, 20.000, Point.CARTESIAN)
+                        new Point(10.000, 25.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));

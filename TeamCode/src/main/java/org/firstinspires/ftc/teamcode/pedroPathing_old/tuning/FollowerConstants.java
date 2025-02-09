@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing_old.util.KalmanFilterParamete
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/4/2024
  */
-@Config
+//@Config
 public class FollowerConstants {
 
     // This section is for configuring your motors

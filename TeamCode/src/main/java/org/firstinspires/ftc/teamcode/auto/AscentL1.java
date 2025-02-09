@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
@@ -30,7 +31,7 @@ public class AscentL1 extends OpMode {
 
     private int autoState;
 
-    private Path p1;
+    private Path p1, p2;
 
     private final Pose startPose = new Pose(8, 104, 0);
 
@@ -99,13 +100,20 @@ public class AscentL1 extends OpMode {
 
     public void build_paths() {
         p1 = new Path(
-                new BezierCurve(
+                new BezierLine(
                         new Point(8.000, 104.000, Point.CARTESIAN),
-                        new Point(72.000, 118.000, Point.CARTESIAN),
-                        new Point(68.000, 100.000, Point.CARTESIAN)
+                        new Point(40.000, 104.000, Point.CARTESIAN)
                 )
         );
-        p1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90));
+        p1.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p2 = new Path(
+                new BezierLine(
+                        new Point(40.000, 104.000, Point.CARTESIAN),
+                        new Point(40.000, 96.000, Point.CARTESIAN)
+                )
+        );
+        p2.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90));
 
     }
 
@@ -117,6 +125,11 @@ public class AscentL1 extends OpMode {
                 break;
 
             case 2:
+                if (p1.isAtParametricEnd())
+                    f.followPath(p2, true);
+                setState(3);
+                break;
+            case 3:
                 io.outtakeInit();
                 break;
 

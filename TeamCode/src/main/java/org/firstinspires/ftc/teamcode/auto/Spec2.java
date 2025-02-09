@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing_old.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
@@ -32,14 +33,14 @@ public class Spec2 extends OpMode {
 
     private int autoState;
 
-    private Path p1, p2, p3, p4;
+    private Path p1, p2, p3, p4, p5, p6;
 
     private final Pose startPose = new Pose(8, 56, 0);
 
     public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
     public static double extIn = 0, extMid = 600, extOut = 2500;
 
-    public double extSpecI = 150, extSpecO = 1500;
+    public double extSpecI = 200, extSpecO = 1500;
 
     public boolean bool = false;
 
@@ -108,7 +109,7 @@ public class Spec2 extends OpMode {
     public double pathTimer() { return pathTimer.getElapsedTimeSeconds(); }
     public double specTimer() { return specTimer.getElapsedTimeSeconds(); }
 
-    public void pick(Path p, double d) {
+    public boolean pick(Path p, double d) {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivUp);
@@ -118,28 +119,28 @@ public class Spec2 extends OpMode {
             bool = true;
         }
 
-        if (p.isAtParametricEnd()) {
+        if (/* p.isAtParametricEnd() || */specTimer() > (d-0.5)) {
             io.clawClose();
         }
 
         if (specTimer() > d) {
             bool = false;
-            setState(autoState+1);
-        }
+//            setState(autoState+1);
+            return true;
+        } else return false;
     }
 
 
-    public void score(Path p, double d) {
+    public boolean score(Path p, double d) {
         if (!bool) {
             slides.setPivTarget(pivUp);
             io.spec4auto();
-
+            specTimer.resetTimer();
             bool = true;
         }
 
-        if (p.isAtParametricEnd()) {
+        if (p.isAtParametricEnd() || (specTimer() > d-1 && specTimer() < d)) {
             slides.setExtTarget(extSpecO);
-            specTimer.resetTimer();
 
         }
 
@@ -147,45 +148,59 @@ public class Spec2 extends OpMode {
             slides.setExtTarget(extSpecI);
             io.clawOpen();
             bool = false;
-            setState(autoState+1);
-        }
+//            setState(autoState+1);
+            return true;
+        } else return false;
     }
 
     public void build_paths() {
         p1 = new Path(
-                new BezierCurve(
+                new BezierLine(
                         new Point(8.000, 56.000, Point.CARTESIAN),
-                        new Point(18.000, 70.000, Point.CARTESIAN),
-                        new Point(42.000, 68.000, Point.CARTESIAN)
+                        new Point(8.000, 67.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));
 
-
         p2 = new Path(
                 new BezierLine(
-                        new Point(42.000, 68.000, Point.CARTESIAN),
-                        new Point(9.000, 23.000, Point.CARTESIAN)
+                        new Point(8.000, 66.500, Point.CARTESIAN),
+                        new Point(35.000, 66.500, Point.CARTESIAN)
                 )
         );
         p2.setConstantHeadingInterpolation(Math.toRadians(0));
 
         p3 = new Path(
                 new BezierLine(
-                        new Point(9.000, 23.000, Point.CARTESIAN),
-                        new Point(42.000, 70.000, Point.CARTESIAN)
-
+                        new Point(35.000, 66.500, Point.CARTESIAN),
+                        new Point(12.000, 40.000, Point.CARTESIAN)
                 )
         );
         p3.setConstantHeadingInterpolation(Math.toRadians(0));
 
         p4 = new Path(
                 new BezierLine(
-                        new Point(42.000, 70.000, Point.CARTESIAN),
-                        new Point(10.000, 20.000, Point.CARTESIAN)
+                        new Point(12.000, 40.000, Point.CARTESIAN),
+                        new Point(12.000, 72.000, Point.CARTESIAN)
                 )
         );
         p4.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p5 = new Path(
+                new BezierLine(
+                        new Point(12.000, 72.000, Point.CARTESIAN),
+                        new Point(40.000, 72.000, Point.CARTESIAN)
+                )
+        );
+        p5.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        p6 = new Path(
+                new BezierLine(
+                        new Point(40.000, 72.000, Point.CARTESIAN),
+                        new Point(12.000, 45.000, Point.CARTESIAN)
+                )
+        );
+        p6.setConstantHeadingInterpolation(Math.toRadians(0));
 
     }
 
@@ -196,35 +211,49 @@ public class Spec2 extends OpMode {
                 f.followPath(p1, true);
                 setState(2);
                 break;
-
             case 2:
-                score(p1, 2.5);
-                break;
-            case 3:
                 if (p1.isAtParametricEnd()) {
                     f.followPath(p2, true);
-                    setState(4);
+                    setState(3);
                 }
+                break;
+            case 3:
+                if (score(p2, 2.5)) setState(4);
                 break;
             case 4:
-                pick(p2, 3);
+//                if (p2.isAtParametricEnd()) {
+                    f.followPath(p3, true);
+                    setState(5);
+//                }
                 break;
             case 5:
-                if (p2.isAtParametricEnd()) {
-                    f.followPath(p3, true);
-                    setState(6);
-                }
+                if (pick(p3, 4.5)) setState(6);
                 break;
             case 6:
-                score(p3, 2.5);
+//                if (p3.isAtParametricEnd()) {
+                    f.followPath(p4, true);
+                    setState(7);
+//                }
                 break;
             case 7:
-                if (p3.isAtParametricEnd()) {
-                    f.followPath(p4);
+                if (p4.isAtParametricEnd()) {
+                    f.followPath(p5, true);
                     setState(8);
                 }
                 break;
             case 8:
+                score(p5, 3.5);
+                break;
+            case 9:
+//                if (p4.isAtParametricEnd()) {
+                    f.followPath(p6);
+                pathTimer.resetTimer();
+                    setState(10);
+//                }
+                break;
+            case 10:
+                if (pathTimer() > 2.5)
+                    f.holdPoint(new BezierPoint(new Point(f.getPose().getX(), f.getPose().getY())), Math.toRadians(0));
                 slides.setExtTarget(extIn);
                 io.straight();
                 break;

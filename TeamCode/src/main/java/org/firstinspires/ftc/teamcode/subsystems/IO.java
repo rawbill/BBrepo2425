@@ -47,6 +47,7 @@ public class IO implements Subsystem {
     public void init() {
         gbPos = 1;
         pivPos = 0.9;
+        this.clawClose();
     }
 
     public void rest() {
@@ -66,9 +67,15 @@ public class IO implements Subsystem {
         rotPos = 0.5;
     }
 
-    public void spec4auto() {
+    public void spec4tele() {
         gbPos = 0.8;
         pivPos = 0.7;
+        rotPos = 0.5;
+    }
+
+    public void spec4auto() {
+        gbPos = 0.75;
+        pivPos = 0.625;
         rotPos = 0.5;
     }
 
@@ -192,7 +199,7 @@ public class IO implements Subsystem {
 //                gbPos = 0.75;
 //                pivPos = 0.6;
 //                rotPos = 0.5;
-                spec4auto();
+                spec4tele();
             } else {
                 specimenInit();
 

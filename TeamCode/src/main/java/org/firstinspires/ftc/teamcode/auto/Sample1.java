@@ -32,7 +32,7 @@ public class Sample1 extends OpMode {
 
     private int autoState;
 
-    private Path p1, p2;
+    private Path p1, p2, p3, p4;
 
     private final Pose startPose = new Pose(8, 104, 0);
 
@@ -145,14 +145,28 @@ public class Sample1 extends OpMode {
 
 
         p2 = new Path(
-                new BezierCurve(
+                new BezierLine(
                         new Point(13.000, 131.000, Point.CARTESIAN),
-                        new Point(20.000, 96.000, Point.CARTESIAN),
-                        new Point(72.000, 118.000, Point.CARTESIAN),
-                        new Point(68.000, 100.000, Point.CARTESIAN)
+                        new Point(13.000, 104.000, Point.CARTESIAN)
                 )
         );
         p2.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90));
+
+        p3 = new Path(
+                new BezierLine(
+                        new Point(13.000, 104.000, Point.CARTESIAN),
+                        new Point(40.000, 104.000, Point.CARTESIAN)
+                )
+        );
+        p3.setConstantHeadingInterpolation(Math.toRadians(90));
+
+        p4 = new Path(
+                new BezierLine(
+                        new Point(40.000, 104.000, Point.CARTESIAN),
+                        new Point(40.000, 96.000, Point.CARTESIAN)
+                )
+        );
+        p4.setConstantHeadingInterpolation(Math.toRadians(90));
 
     }
 
