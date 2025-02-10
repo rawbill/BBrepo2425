@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 public class FConstants {
     static {
-        FollowerConstants.localizers = Localizers.OTOS;
+        FollowerConstants.localizers = Localizers.TWO_WHEEL;
 
         FollowerConstants.leftFrontMotorName = "lfm";
         FollowerConstants.leftRearMotorName = "lbm";
@@ -20,19 +20,19 @@ public class FConstants {
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.mass = 13.548;
+        FollowerConstants.mass = 13.830;
 
-        FollowerConstants.xMovement = 62.2402;
-        FollowerConstants.yMovement = 37.8424;
+        FollowerConstants.xMovement = 71.0283;
+        FollowerConstants.yMovement = 43.9856;
 
         FollowerConstants.forwardZeroPowerAcceleration = -28.1004;
-        FollowerConstants.lateralZeroPowerAcceleration = -73.9267;
+        FollowerConstants.lateralZeroPowerAcceleration = -67.6566;
 
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.1,0,0.01,0);
         FollowerConstants.useSecondaryTranslationalPID = false;
         FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.1,0,0.01,0); // Not being used, @see useSecondaryTranslationalPID
 
-        FollowerConstants.headingPIDFCoefficients.setCoefficients(1,0,0.1,0);
+        FollowerConstants.headingPIDFCoefficients.setCoefficients(1,0,0.5,0);
         FollowerConstants.useSecondaryHeadingPID = false;
         FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(2,0,0.1,0); // Not being used, @see useSecondaryHeadingPID
 
@@ -51,7 +51,7 @@ public class FConstants {
 
         FollowerConstants.useVoltageCompensationInAuto = true;
         FollowerConstants.useVoltageCompensationInTeleOp = true;
-        FollowerConstants.nominalVoltage = 13.8;
+        FollowerConstants.nominalVoltage = 13.4;
         FollowerConstants.cacheInvalidateSeconds = 0.5;
     }
 }

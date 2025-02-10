@@ -2,20 +2,21 @@ package org.firstinspires.ftc.teamcode.pedroPathing.constants;
 
 import com.pedropathing.localization.*;
 import com.pedropathing.localization.constants.*;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class LConstants {
     static {
-        OTOSConstants.useCorrectedOTOSClass = false;
-        OTOSConstants.hardwareMapName = "sensor_otos";
-        OTOSConstants.linearUnit = DistanceUnit.INCH;
-        OTOSConstants.angleUnit = AngleUnit.RADIANS;
-        OTOSConstants.offset = new SparkFunOTOS.Pose2D(-1.5, 6 + 13/16.0, Math.PI / 2);
-        OTOSConstants.linearScalar = 1.0621;
-        OTOSConstants.angularScalar = 0.9882;
+        TwoWheelConstants.forwardTicksToInches = .0029;
+        TwoWheelConstants.strafeTicksToInches = .0029;
+        TwoWheelConstants.forwardY = 7.5;
+        TwoWheelConstants.strafeX = -5.25;
+        TwoWheelConstants.forwardEncoder_HardwareMapName = "lfm";
+        TwoWheelConstants.strafeEncoder_HardwareMapName = "rfm";
+        TwoWheelConstants.forwardEncoderDirection = Encoder.FORWARD;
+        TwoWheelConstants.strafeEncoderDirection = Encoder.FORWARD;
+        TwoWheelConstants.IMU_HardwareMapName = "imu";
+        TwoWheelConstants.IMU_Orientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
     }
 }
 
