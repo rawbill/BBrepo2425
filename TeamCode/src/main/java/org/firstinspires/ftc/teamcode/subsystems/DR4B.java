@@ -17,8 +17,8 @@ public class DR4B implements Subsystem {
             TelePIDConstants.DR4B_Kd  // D
     );
 
-    private DcMotorEx DR4Bleft;
-    private DcMotorEx DR4Bright;
+    public DcMotorEx DR4Bleft;
+    public DcMotorEx DR4Bright;
 
     double COUNTS_PER_DEGREE = 2786.2/360;
     // encoder resolution or 84 rpm yellow jacket divided by 360

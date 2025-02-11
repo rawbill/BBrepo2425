@@ -17,10 +17,10 @@ import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 
 public class Drivetrain implements Subsystem {
 
-    private DcMotorEx lfMotor;
-    private DcMotorEx lbMotor;
-    private DcMotorEx rfMotor;
-    private DcMotorEx rbMotor;
+    public DcMotorEx lfMotor;
+    public DcMotorEx lbMotor;
+    public DcMotorEx rfMotor;
+    public DcMotorEx rbMotor;
 
     private final IMU imu;
 

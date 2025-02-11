@@ -9,10 +9,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake implements Subsystem {
 
-    private Servo rightGb;
-    private Servo leftGb;
-    private Servo intPiv;
-    private Servo intClaw;
+    public Servo rightGb;
+    public Servo leftGb;
+    public Servo intPiv;
+    public Servo intClaw;
 
     Telemetry telemetry;
 

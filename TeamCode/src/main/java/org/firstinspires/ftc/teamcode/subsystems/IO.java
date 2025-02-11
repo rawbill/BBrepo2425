@@ -14,11 +14,11 @@ import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 
 @Config
 public class IO implements Subsystem {
-    private Servo leftGb;
-    private Servo rightGb;
-    private Servo clawPiv;
-    private Servo clawRot;
-    private Servo claw;
+    public Servo leftGb;
+    public Servo rightGb;
+    public Servo clawPiv;
+    public Servo clawRot;
+    public Servo claw;
     Telemetry telemetry;
 
     private Timer timer = new Timer();

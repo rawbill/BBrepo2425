@@ -6,18 +6,24 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.automac.AutoMac;
 import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Config
 @TeleOp(name="PivotSlidesTeleOp", group=" ")
 public class PivotSlidesTeleOp extends LinearOpMode {
-
+    AutoMac autoMac = new AutoMac("ExampleAuto", hardwareMap); // TODO: change auto name
     private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
     Slides slides;
@@ -38,7 +44,29 @@ public class PivotSlidesTeleOp extends LinearOpMode {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
         io = new IO(hardwareMap, telemetry);
+        Map<String, DcMotor> motors = new HashMap<String, DcMotor>() {{
+            put("rfm", drivetrain.rfMotor);
+            put("lbm", drivetrain.lbMotor);
+            put("lfm", drivetrain.lfMotor);
+            put("rbm", drivetrain.rbMotor);
+            put("lspool", slides.lSpool);
+            put("rspool", slides.rSpool);
+            put("slidepiv", slides.slidePiv);
+        }};
 
+
+// Servo Map -> {Servo name, Servo}
+        Map<String, Servo> servos = new HashMap<String, Servo>() {{
+            put("claw", io.claw);
+            put("rightGb", io.rightGb);
+            put("leftGb", io.leftGb);
+            put("clawPiv", io.clawPiv);
+            put("clawRot", io.clawRot);
+
+        }};
+
+        autoMac.logMotors(motors);
+        autoMac.logServos(servos);
 
         Subsystem[] subsystems = new Subsystem[] {
                 drivetrain, slides, io
@@ -60,6 +88,8 @@ public class PivotSlidesTeleOp extends LinearOpMode {
         }
 
         waitForStart();
+        //TODO: start automac
+        autoMac.start();
         runtime.reset();
 
         setState(2);
@@ -81,6 +111,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             telemetry.addData("pivPos", io.pivPos);
 
             telemetry.update();
+            autoMac.update(); // TODO: Update
         }
     }
 
