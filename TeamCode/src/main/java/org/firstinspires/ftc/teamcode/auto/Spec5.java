@@ -39,10 +39,12 @@ public class Spec5 extends OpMode {
 
     private Path p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17;
 
-    private final Pose startPose = new Pose(9, 57, Math.toRadians(0));
+    private final Pose startPose = new Pose(9, 56, Math.toRadians(0));
 
-    public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
+    public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivBack = -50;
     public static double extIn = 0, extMid = 600, extOut = 2500;
+
+    public double extSpecI = 225, extSpecO = 1500;
 
     public static double pickDelay = 1.5, scoreDelay = 2;
 
@@ -58,7 +60,7 @@ public class Spec5 extends OpMode {
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
-        Constants.setConstants(LConstants.class, FConstants.class);
+        Constants.setConstants(FConstants.class, LConstants.class);
         f = new Follower(hardwareMap);
 
         slides = new Slides(hardwareMap, telemetryA);
@@ -69,6 +71,8 @@ public class Spec5 extends OpMode {
         f.setStartingPose(startPose);
 
         slides.setPivTarget(pivInit);
+        slides.setExtTarget(extIn);
+
         io.init();
         io.clawClose();
 
@@ -76,7 +80,7 @@ public class Spec5 extends OpMode {
 
     @Override
     public void init_loop() {
-        slides.updatePiv();
+        slides.update();
         io.update();
         telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
         telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
@@ -98,9 +102,11 @@ public class Spec5 extends OpMode {
         f.update();
         autoUpdate();
 
-        slides.updatePiv();
+        slides.update();
         io.update();
 
+        telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
+        telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
         f.telemetryDebug(telemetryA);
 
     }
@@ -110,88 +116,56 @@ public class Spec5 extends OpMode {
     public double pathTimer() { return pathTimer.getElapsedTimeSeconds(); }
     public double specTimer() { return specTimer.getElapsedTimeSeconds(); }
 
-    public void pick( double delay) {
+    public void pick(double d) {
         if (!bool) {
             specTimer.resetTimer();
-            slides.setPivTarget(pivUp);
+            slides.setPivTarget(pivBack);
+            slides.setExtTarget(extSpecI);
             io.specimenInit();
+            io.clawOpen();
 
             bool = true;
         }
 
-        while (bool) {
+        if (specTimer() > d - 0.5) {
+            io.clawClose();
+        }
 
-            f.update();
-            slides.updatePiv();
-            io.update();
-
-            if (specTimer() > 0 && specTimer() < delay) {
-
-                if (slides.spools()[0].getCurrentPosition() > 400) slides.setExtPower(-0.2);
-                else slides.setExtPower(0.5);
-
-            }
-
-            if (specTimer() > delay && specTimer() < delay + 1) {
-
-                if (slides.spools()[0].getCurrentPosition() < 75) {
-                    slides.setExtPower(0);
-                }
-                else slides.setExtPower(-0.5);
-                io.clawClose();
-
-            }
-
-            if (specTimer() > delay + 0.5) {
-
-                bool = false;
-            }
+        if (specTimer() > d) {
+            bool = false;
+            setState(autoState+1);
         }
     }
 
-    public void score(double delay) {
-
+    public void score(double d) {
         if (!bool) {
             specTimer.resetTimer();
-            slides.setPivTarget(pivUp);
+            slides.setPivTarget(pivBack);
+            slides.setExtTarget(extIn);
             io.spec4auto();
+            io.clawClose();
 
             bool = true;
         }
 
-        while (bool) {
+        if (specTimer() > d-1 && specTimer() < d) {
+            slides.setExtTarget(extSpecO);
 
-            f.update();
-            slides.updatePiv();
-            io.update();
-
-
-            if (specTimer() > delay && specTimer() < delay + 0.75) {
-
-                if (slides.spools()[0].getCurrentPosition() > 1000) slides.setExtPower(-0.2);
-                else slides.setExtPower(1);
-
-                slides.setPivTarget(pivUp);
-            }
-
-            if (specTimer() > delay + 0.75) {
-                if (slides.spools()[0].getCurrentPosition() < 10) {
-                    slides.setExtPower(0);
-                }
-                else slides.setExtPower(-1);
-                io.clawOpen();
-                bool = false;
-            }
         }
-        io.specimenInit();
-        slides.setExtPower(-0.2);
+
+        if (specTimer() > d) {
+            slides.setExtTarget(extSpecI);
+            io.clawOpen();
+            bool = false;
+            setState(autoState+1);
+        }
     }
 
     public void build_paths() {
         p1 = new Path(
                 new BezierLine(
-                        new Point(9.000, 57.000, Point.CARTESIAN),
-                        new Point(39.000, 64.000, Point.CARTESIAN)
+                        new Point(9.000, 56.000, Point.CARTESIAN),
+                        new Point(34.000, 64.000, Point.CARTESIAN)
                 )
         );
         p1.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -199,12 +173,12 @@ public class Spec5 extends OpMode {
 
         p2 = new Path(
                 new BezierCurve(
-                new Point(39.000, 64.000, Point.CARTESIAN),
-                new Point(15.000, 20.000, Point.CARTESIAN),
-                new Point(60.000, 45.000, Point.CARTESIAN),
-                new Point(65.000, 25.000, Point.CARTESIAN),
-                new Point(60.000, 23.000, Point.CARTESIAN)
-        )
+                        new Point(34.000, 64.000, Point.CARTESIAN),
+                        new Point(15.000, 18.000, Point.CARTESIAN),
+                        new Point(60.000, 45.000, Point.CARTESIAN),
+                        new Point(65.000, 25.000, Point.CARTESIAN),
+                        new Point(60.000, 23.000, Point.CARTESIAN)
+                )
         );
         p2.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(90));
 
@@ -272,7 +246,7 @@ public class Spec5 extends OpMode {
                 new BezierCurve(
                         new Point(13.000, 24.000, Point.CARTESIAN),
                         new Point(10.000, 75.000, Point.CARTESIAN),
-                        new Point(39.000, 68.000, Point.CARTESIAN)
+                        new Point(40.000, 68.000, Point.CARTESIAN)
                 )
         );
         p10.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -280,7 +254,7 @@ public class Spec5 extends OpMode {
 
         p11 = new Path(
                 new BezierLine(
-                        new Point(39.000, 68.000, Point.CARTESIAN),
+                        new Point(40.000, 68.000, Point.CARTESIAN),
                         new Point(13.000, 24.000, Point.CARTESIAN)
                 )
         );
@@ -291,7 +265,7 @@ public class Spec5 extends OpMode {
                 new BezierCurve(
                         new Point(13.000, 24.000, Point.CARTESIAN),
                         new Point(10.000, 75.000, Point.CARTESIAN),
-                        new Point(39.000, 70.000, Point.CARTESIAN)
+                        new Point(40.000, 70.000, Point.CARTESIAN)
                 )
         );
         p12.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -299,7 +273,7 @@ public class Spec5 extends OpMode {
 
         p13 = new Path(
                 new BezierLine(
-                        new Point(39.000, 70.000, Point.CARTESIAN),
+                        new Point(40.000, 70.000, Point.CARTESIAN),
                         new Point(13.000, 24.000, Point.CARTESIAN)
                 )
         );
@@ -310,14 +284,14 @@ public class Spec5 extends OpMode {
                 new BezierCurve(
                         new Point(13.000, 24.000, Point.CARTESIAN),
                         new Point(10.000, 75.000, Point.CARTESIAN),
-                        new Point(39.000, 72.000, Point.CARTESIAN)
+                        new Point(40.000, 72.000, Point.CARTESIAN)
                 )
         );
         p14.setConstantHeadingInterpolation(Math.toRadians(0));
 
         p15 = new Path(
                 new BezierLine(
-                        new Point(39.000, 72.000, Point.CARTESIAN),
+                        new Point(40.000, 72.000, Point.CARTESIAN),
                         new Point(13.000, 24.000, Point.CARTESIAN)
                 )
         );
@@ -328,14 +302,14 @@ public class Spec5 extends OpMode {
                 new BezierCurve(
                         new Point(13.000, 24.000, Point.CARTESIAN),
                         new Point(10.000, 75.000, Point.CARTESIAN),
-                        new Point(39.000, 74.000, Point.CARTESIAN)
+                        new Point(40.000, 74.000, Point.CARTESIAN)
                 )
         );
         p16.setConstantHeadingInterpolation(Math.toRadians(0));
 
         p17 = new Path(
                 new BezierLine(
-                        new Point(39.000, 74.000, Point.CARTESIAN),
+                        new Point(40.000, 74.000, Point.CARTESIAN),
                         new Point(14.000, 20.000, Point.CARTESIAN)
                 )
         );
