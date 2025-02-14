@@ -136,7 +136,7 @@ public class Sample4 extends OpMode {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivUp);
-            io.outtakeInit();
+            io.straight();
 
             bool = true;
         }
@@ -146,12 +146,18 @@ public class Sample4 extends OpMode {
 
         }
 
-        if (specTimer() > d-0.5) {
+        if (specTimer() > d - 1.5 && specTimer() < d - 1) {
+            io.outtakeInit();
             io.clawOpen();
+
+        }
+
+        if (specTimer() > d - 1) {
+            io.intakeInit();
+            slides.setExtTarget(extIn);
         }
 
         if (specTimer() > d) {
-            slides.setExtTarget(extIn);
 
             bool = false;
 
@@ -163,7 +169,7 @@ public class Sample4 extends OpMode {
         p1 = new Path(
                 new BezierLine(
                         new Point(8.000, 104.000, Point.CARTESIAN),
-                        new Point(13.000, 131.000, Point.CARTESIAN)
+                        new Point(12.000, 128.000, Point.CARTESIAN)
                 )
         );
         p1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
@@ -171,7 +177,7 @@ public class Sample4 extends OpMode {
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(12.000, 128.000, Point.CARTESIAN),
                         new Point(30.000, 121.000, Point.CARTESIAN)
                 )
         );
@@ -180,14 +186,14 @@ public class Sample4 extends OpMode {
         p3 = new Path(
                 new BezierLine(
                         new Point(30.000, 121.000, Point.CARTESIAN),
-                        new Point(13.000, 131.000, Point.CARTESIAN)
+                        new Point(12.000, 128.000, Point.CARTESIAN)
                 )
         );
         p3.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
 
         p4 = new Path(
                 new BezierLine(
-                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(12.000, 128.000, Point.CARTESIAN),
                         new Point(30.000, 132.000, Point.CARTESIAN)
                 )
         );
@@ -196,14 +202,14 @@ public class Sample4 extends OpMode {
         p5 = new Path(
                 new BezierLine(
                         new Point(30.000, 132.000, Point.CARTESIAN),
-                        new Point(13.000, 131.000, Point.CARTESIAN)
+                        new Point(12.000, 128.000, Point.CARTESIAN)
                 )
         );
         p5.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
 
         p6 = new Path(
                 new BezierLine(
-                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(12.000, 128.000, Point.CARTESIAN),
                         new Point(45.500, 129.000, Point.CARTESIAN)
                 )
         );
@@ -212,14 +218,14 @@ public class Sample4 extends OpMode {
         p7 = new Path(
                 new BezierLine(
                         new Point(45.500, 129.000, Point.CARTESIAN),
-                        new Point(13.000, 131.000, Point.CARTESIAN)
+                        new Point(12.000, 128.000, Point.CARTESIAN)
                 )
         );
         p7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-45));
 
         p8 = new Path(
                 new BezierLine(
-                        new Point(13.000, 131.000, Point.CARTESIAN),
+                        new Point(12.000, 128.000, Point.CARTESIAN),
                         new Point(68.000, 100.000, Point.CARTESIAN)
                 )
         );
@@ -238,7 +244,7 @@ public class Sample4 extends OpMode {
                 break;
 
             case 2:
-                score(4);
+                score(5);
                 break;
             case 3:
                 if (p1.isAtParametricEnd()) {
@@ -247,7 +253,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 4:
-                pick(1, false);
+                pick(2, false);
                 break;
             case 5:
                 if (p2.isAtParametricEnd()) {
@@ -256,7 +262,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 6:
-                score(4);
+                score(5);
                 break;
             case 7:
                 if (p3.isAtParametricEnd()) {
@@ -265,7 +271,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 8:
-                pick(1, false);
+                pick(2, false);
                 break;
             case 9:
                 if (p4.isAtParametricEnd()) {
@@ -274,7 +280,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 10:
-                score(4);
+                score(5);
                 break;
             case 11:
                 if (p5.isAtParametricEnd()) {
@@ -283,7 +289,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 12:
-                pick(1, true);
+                pick(2, true);
                 break;
             case 13:
                 if (p6.isAtParametricEnd()) {
@@ -292,7 +298,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 14:
-                score(4);
+                score(5);
                 break;
             case 15:
                 if (p7.isAtParametricEnd()) {

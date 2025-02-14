@@ -30,7 +30,7 @@ public class Spec5 extends OpMode {
 
     private Timer pathTimer, specTimer;
 
-    private Follower f;
+    private Follower follower;
 
     private Slides slides;
     private IO io;
@@ -61,14 +61,14 @@ public class Spec5 extends OpMode {
         telemetryA.update();
 
         Constants.setConstants(FConstants.class, LConstants.class);
-        f = new Follower(hardwareMap);
+        follower = new Follower(hardwareMap);
 
         slides = new Slides(hardwareMap, telemetryA);
         io = new IO(hardwareMap, telemetryA);
 
         build_paths();
 
-        f.setStartingPose(startPose);
+        follower.setStartingPose(startPose);
 
         slides.setPivTarget(pivInit);
         slides.setExtTarget(extIn);
@@ -99,7 +99,7 @@ public class Spec5 extends OpMode {
 
     @Override
     public void loop() {
-        f.update();
+        follower.update();
         autoUpdate();
 
         slides.update();
@@ -107,7 +107,7 @@ public class Spec5 extends OpMode {
 
         telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
         telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
-        f.telemetryDebug(telemetryA);
+        follower.telemetryDebug(telemetryA);
 
     }
 
@@ -116,7 +116,7 @@ public class Spec5 extends OpMode {
     public double pathTimer() { return pathTimer.getElapsedTimeSeconds(); }
     public double specTimer() { return specTimer.getElapsedTimeSeconds(); }
 
-    public void pick(double d) {
+    public void pick(double delay) {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivBack);
@@ -127,17 +127,17 @@ public class Spec5 extends OpMode {
             bool = true;
         }
 
-        if (specTimer() > d - 0.5) {
+        if (specTimer() > delay - 0.5) {
             io.clawClose();
         }
 
-        if (specTimer() > d) {
+        if (specTimer() > delay) {
             bool = false;
-            setState(autoState+1);
+//            setState(autoState+1);
         }
     }
 
-    public void score(double d) {
+    public void score(double delay) {
         if (!bool) {
             specTimer.resetTimer();
             slides.setPivTarget(pivBack);
@@ -148,16 +148,16 @@ public class Spec5 extends OpMode {
             bool = true;
         }
 
-        if (specTimer() > d-1 && specTimer() < d) {
+        if (specTimer() > delay-1 && specTimer() < delay) {
             slides.setExtTarget(extSpecO);
 
         }
 
-        if (specTimer() > d) {
+        if (specTimer() > delay) {
             slides.setExtTarget(extSpecI);
             io.clawOpen();
             bool = false;
-            setState(autoState+1);
+//            setState(autoState+1);
         }
     }
 
@@ -321,112 +321,112 @@ public class Spec5 extends OpMode {
 //        f.update();
         switch (autoState) {
             case 1:
-                f.followPath(p1, true);
+                follower.followPath(p1, true);
                 setState(2);
                 break;
 
             case 2:
-                score(0.75);
+//                score(0.75);
                 if (p1.isAtParametricEnd()) {
-                    f.followPath(p2, true);
+                    follower.followPath(p2, true);
                     setState(3);
                 }
                 break;
             case 3:
                 if (p2.isAtParametricEnd()) {
-                    f.followPath(p3, true);
+                    follower.followPath(p3, true);
                     setState(4);
                 }
                 break;
             case 4:
                 if (p3.isAtParametricEnd()) {
-                    f.followPath(p4, true);
+                    follower.followPath(p4, true);
                     setState(5);
                 }
                 break;
             case 5:
-                if (p4.isAtParametricEnd() || p5.isAtParametricStart()) {
-                    f.followPath(p5, true);
+                if (p4.isAtParametricEnd()) {
+                    follower.followPath(p5, true);
                     setState(6);
                 }
                 break;
             case 6:
                 if (p5.isAtParametricEnd()) {
-                    f.followPath(p6, true);
+                    follower.followPath(p6, true);
                     setState(7);
                 }
                 break;
             case 7:
                 if (p6.isAtParametricEnd()) {
-                    f.followPath(p7, true);
+                    follower.followPath(p7, true);
                     setState(8);
                 }
                 break;
             case 8:
                 if (p7.isAtParametricEnd()) {
-                    f.followPath(p8, true);
+                    follower.followPath(p8, true);
                     setState(9);
                 }
                 break;
             case 9:
                 if (p8.isAtParametricEnd()) {
-                    f.followPath(p9, true);
+                    follower.followPath(p9, true);
                     setState(10);
                 }
                 break;
             case 10:
-                pick(pickDelay);
+//                pick(pickDelay);
                 if (p9.isAtParametricEnd()) {
-                    f.followPath(p10, true);
+                    follower.followPath(p10, true);
                     setState(11);
                 }
                 break;
             case 11:
-                score(scoreDelay);
+//                score(scoreDelay);
                 if (p10.isAtParametricEnd()) {
-                    f.followPath(p11, true);
+                    follower.followPath(p11, true);
                     setState(12);
                 }
                 break;
             case 12:
-                pick(pickDelay + 0.25);
+//                pick(pickDelay + 0.25);
                 if (p11.isAtParametricEnd()) {
-                    f.followPath(p12, true);
+                    follower.followPath(p12, true);
                     setState(13);
                 }
                 break;
             case 13:
-                score(scoreDelay);
+//                score(scoreDelay);
                 if (p12.isAtParametricEnd()) {
-                    f.followPath(p13, true);
+                    follower.followPath(p13, true);
                     setState(14);
                 }
                 break;
             case 14:
-                pick(pickDelay);
+//                pick(pickDelay);
                 if (p13.isAtParametricEnd()) {
-                    f.followPath(p14, true);
+                    follower.followPath(p14, true);
                     setState(15);
                 }
                 break;
             case 15:
-                score(scoreDelay);
+//                score(scoreDelay);
                 if (p14.isAtParametricEnd()) {
-                    f.followPath(p15, true);
+                    follower.followPath(p15, true);
                     setState(16);
                 }
                 break;
             case 16:
-                pick(pickDelay);
+//                pick(pickDelay);
                 if (p15.isAtParametricEnd()) {
-                    f.followPath(p16, true);
+                    follower.followPath(p16, true);
                     setState(17);
                 }
                 break;
             case 17:
-                score(scoreDelay);
+//                score(scoreDelay);
                 if (p16.isAtParametricEnd()) {
-                    f.followPath(p17, true);
+                    follower.followPath(p17, true);
                     setState(18);
                 }
                 break;
