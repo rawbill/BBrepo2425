@@ -245,19 +245,19 @@ public class IO implements Subsystem {
 
     }
 
-    public double gbSetter(double input, double offset) {
+    public double gbSetter(double input, double dOffset) {
         // Clip the input to the valid range [0, 1000]
         double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        return offset + 0.75 + (clippedInput - 0) * (1 - 0.75) / (1000 - 0);
+        return dOffset + 0.75 + (clippedInput - 0) * (1 - 0.75) / (1000 - 0);
     }
 
-    public double pivSetter(double input, double offset) {
+    public double pivSetter(double input, double dOffset) {
         // Clip the input to the valid range [0, 1000]
         double clippedInput = Math.max(0, Math.min(input, 1000));
 
         // Calculate the mapped value directly
-        return -offset + 0.8 + (clippedInput - 0) * (0.625 - 0.8) / (1000 - 0);
+        return -dOffset + 0.8 + (clippedInput - 0) * (0.625 - 0.8) / (1000 - 0);
     }
 }

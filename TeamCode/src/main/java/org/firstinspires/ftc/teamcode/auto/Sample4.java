@@ -3,16 +3,21 @@ package org.firstinspires.ftc.teamcode.auto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
 
@@ -35,8 +40,8 @@ public class Sample4 extends OpMode {
 
     private final Pose startPose = new Pose(8, 104, 0);
 
-    public static double pivInit = 600, pivDown = 1650, pivUp = 0, pivSpec = 400;
-    public static double extIn = 0, extMid = 600, extOut = 2500;
+    public static double pivInit = 600, pivDown = 1700, pivUp = 0, pivSpec = 400;
+    public static double extIn = 0, extMid = 600, extOut = 2475;
 
     public double extSpec = 1500;
 
@@ -51,6 +56,9 @@ public class Sample4 extends OpMode {
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
+
+        Constants.setConstants(FConstants.class, LConstants.class);
+
 
         f = new Follower(hardwareMap);
 
@@ -113,8 +121,8 @@ public class Sample4 extends OpMode {
             specTimer.resetTimer();
             slides.setExtTarget(extIn);
             slides.setPivTarget(pivDown);
-            io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0);
-            io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0);
+            io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0.025);
+            io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0.025);
 
             if (rotate) io.rotPos = 0.8;
             else io.rotPos = 0.5;
@@ -122,9 +130,11 @@ public class Sample4 extends OpMode {
             bool = true;
         }
 
-        if (specTimer() > d) {
+        if (specTimer() > d - 0.5 && specTimer() < d) {
             io.clawClose();
-            slides.setPivTarget(pivUp);
+        }
+
+        if (specTimer() > d) {
 
             bool = false;
 
@@ -141,7 +151,7 @@ public class Sample4 extends OpMode {
             bool = true;
         }
 
-        if (bool) {
+        if (bool && (specTimer() > 1 && specTimer() < d - 1)) {
             slides.setExtTarget(extOut);
 
         }
@@ -169,67 +179,69 @@ public class Sample4 extends OpMode {
         p1 = new Path(
                 new BezierLine(
                         new Point(8.000, 104.000, Point.CARTESIAN),
-                        new Point(12.000, 128.000, Point.CARTESIAN)
+                        new Point(22.000, 127.000, Point.CARTESIAN)
                 )
         );
-        p1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
+        p1.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)); // score 1
 
 
         p2 = new Path(
                 new BezierLine(
-                        new Point(12.000, 128.000, Point.CARTESIAN),
-                        new Point(30.000, 121.000, Point.CARTESIAN)
+                        new Point(22.000, 127.000, Point.CARTESIAN),
+                        new Point(31.000, 125.000, Point.CARTESIAN)
                 )
         );
-        p2.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0));
+        p2.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0)); // pick 1
 
         p3 = new Path(
                 new BezierLine(
-                        new Point(30.000, 121.000, Point.CARTESIAN),
-                        new Point(12.000, 128.000, Point.CARTESIAN)
+                        new Point(31.000, 125.000, Point.CARTESIAN),
+                        new Point(24.000, 132.000, Point.CARTESIAN)
                 )
         );
-        p3.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
+        p3.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)); // score 2
 
         p4 = new Path(
                 new BezierLine(
-                        new Point(12.000, 128.000, Point.CARTESIAN),
-                        new Point(30.000, 132.000, Point.CARTESIAN)
+                        new Point(24.000, 132.000, Point.CARTESIAN),
+                        new Point(31.000, 132.000, Point.CARTESIAN)
                 )
         );
-        p4.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0));
+        p4.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0)); // pick 2
 
         p5 = new Path(
                 new BezierLine(
-                        new Point(30.000, 132.000, Point.CARTESIAN),
-                        new Point(12.000, 128.000, Point.CARTESIAN)
+                        new Point(31.000, 132.000, Point.CARTESIAN),
+                        new Point(24.000, 132.000, Point.CARTESIAN)
                 )
         );
-        p5.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45));
+        p5.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)); // score 3
 
         p6 = new Path(
                 new BezierLine(
-                        new Point(12.000, 128.000, Point.CARTESIAN),
-                        new Point(45.500, 129.000, Point.CARTESIAN)
+                        new Point(24.000, 132.000, Point.CARTESIAN),
+                        new Point(41.000, 123.000, Point.CARTESIAN)
                 )
         );
-        p6.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90));
+        p6.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90)); // pick 3
 
         p7 = new Path(
-                new BezierLine(
-                        new Point(45.500, 129.000, Point.CARTESIAN),
-                        new Point(12.000, 128.000, Point.CARTESIAN)
+                new BezierCurve(
+                        new Point(41.000, 123.000, Point.CARTESIAN),
+                        new Point(39.000, 113.000, Point.CARTESIAN),
+                        new Point(24.000, 132.000, Point.CARTESIAN)
                 )
         );
-        p7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-45));
+        p7.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-45)); // score 4
 
         p8 = new Path(
-                new BezierLine(
-                        new Point(12.000, 128.000, Point.CARTESIAN),
-                        new Point(68.000, 100.000, Point.CARTESIAN)
+                new BezierCurve(
+                        new Point(24.000, 132.000, Point.CARTESIAN),
+                        new Point(68.000, 130.000, Point.CARTESIAN),
+                        new Point(60.000, 84.000, Point.CARTESIAN)
                 )
         );
-        p8.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90));
+        p8.setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90)); // ascend
 
 
 
@@ -244,7 +256,7 @@ public class Sample4 extends OpMode {
                 break;
 
             case 2:
-                score(5);
+                score(4);
                 break;
             case 3:
                 if (p1.isAtParametricEnd()) {
@@ -253,7 +265,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 4:
-                pick(2, false);
+                pick(3, false);
                 break;
             case 5:
                 if (p2.isAtParametricEnd()) {
@@ -262,7 +274,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 6:
-                score(5);
+                score(4);
                 break;
             case 7:
                 if (p3.isAtParametricEnd()) {
@@ -271,7 +283,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 8:
-                pick(2, false);
+                pick(3, false);
                 break;
             case 9:
                 if (p4.isAtParametricEnd()) {
@@ -280,7 +292,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 10:
-                score(5);
+                score(4);
                 break;
             case 11:
                 if (p5.isAtParametricEnd()) {
@@ -289,7 +301,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 12:
-                pick(2, true);
+                pick(3, true);
                 break;
             case 13:
                 if (p6.isAtParametricEnd()) {
@@ -298,7 +310,7 @@ public class Sample4 extends OpMode {
                 }
                 break;
             case 14:
-                score(5);
+                score(4);
                 break;
             case 15:
                 if (p7.isAtParametricEnd()) {
