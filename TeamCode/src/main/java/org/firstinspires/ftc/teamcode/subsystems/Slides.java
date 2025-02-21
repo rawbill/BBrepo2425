@@ -16,9 +16,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Slides implements Subsystem {
 
     Telemetry telemetry;
-    public DcMotorEx slidePiv;
-    public DcMotorEx lSpool;
-    public DcMotorEx rSpool;
+    private DcMotorEx slidePiv;
+    private DcMotorEx lSpool;
+    private DcMotorEx rSpool;
 
     public PIDFController pivController;
     public PIDController extController;
