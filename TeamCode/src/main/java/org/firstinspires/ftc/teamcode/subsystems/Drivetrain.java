@@ -211,9 +211,9 @@ public class Drivetrain implements Subsystem {
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
 
         if (gp1.right_trigger > 0.1) {
-            double y = -gp1.left_stick_y * 0.2; // Remember, Y stick value is reversed
+            double y = -gp1.left_stick_y * 0.3; // Remember, Y stick value is reversed
             double x =  gp1.left_stick_x * 0.4;
-            double rx = gp1.right_stick_x * 0.2;
+            double rx = gp1.right_stick_x * 0.3;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double lfPower = (y + x + rx) / denominator;

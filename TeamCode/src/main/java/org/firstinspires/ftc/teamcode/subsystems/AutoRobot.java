@@ -8,7 +8,6 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.pathGeneration.Path;
 
 public class AutoRobot {
 
@@ -20,7 +19,7 @@ public class AutoRobot {
     public static double pivInit = 600, pivDown = 1700, pivUp = 0, pivSpec = 400, pivBack = -50;
     public static double extIn = 0, extMid = 600, extOut = 2475;
 
-    public double extSpecI = 225, extSpecO = 1500;
+    public double extSpecI = 200, extSpecO = 1500;
 
     public boolean bool = false;
     
@@ -37,8 +36,32 @@ public class AutoRobot {
     }
     
     public double timer() {return timer.getElapsedTimeSeconds();}
-    
-    public void resetTimer() {timer.resetTimer();}
+
+    public class WaitSeconds implements Action {
+
+        private double delay;
+
+        public WaitSeconds(double delay) {
+            this.delay = delay;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!bool) {
+                timer.resetTimer();
+                bool = true;
+            }
+
+            if (timer() > delay) {
+                bool = false;
+                return false;
+            }
+
+            return true;
+
+        }
+    }
+    public Action waitSeconds(double delay) {return new WaitSeconds(delay);}
 
     public class Init implements Action {
 
@@ -64,6 +87,33 @@ public class AutoRobot {
         }
     }
     public Action rest() {return new Rest();}
+
+    public class Straight implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            slides.setPivTarget(pivUp);
+            io.straight();
+            return false;
+        }
+    }
+    public Action straight() {return new Straight();}
+
+    public class SetPiv implements Action {
+
+        private double pos;
+
+        public SetPiv(double pos) {
+            this.pos = pos;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            slides.setPivTarget(pos);
+            return false;
+        }
+    }
+    public Action setPiv(double pos) {return new SetPiv(pos);}
 
     public class Update implements Action {
 
@@ -201,7 +251,7 @@ public class AutoRobot {
             if (!bool) {
                 timer.resetTimer();
                 slides.setPivTarget(pivBack);
-                slides.setExtTarget(extIn);
+                slides.setExtTarget(extSpecI);
                 io.spec4auto();
                 io.clawClose();
 

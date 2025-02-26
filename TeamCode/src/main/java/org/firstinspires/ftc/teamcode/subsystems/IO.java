@@ -27,7 +27,7 @@ public class IO implements Subsystem {
 
     public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, lPad = false, inv = false;
 
-    public double invOffset = 0;
+    public double invOffset = 0.025;
 
 
 
