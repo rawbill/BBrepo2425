@@ -99,21 +99,23 @@ public class AutoRobot {
     }
     public Action straight() {return new Straight();}
 
-    public class SetPiv implements Action {
+    public class PivDown implements Action {
 
         private double pos;
 
-        public SetPiv(double pos) {
+        public PivDown(double pos) {
             this.pos = pos;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             slides.setPivTarget(pos);
+            slides.setExtTarget(extIn);
+            io.specimenInit();
             return false;
         }
     }
-    public Action setPiv(double pos) {return new SetPiv(pos);}
+    public Action pivDown(double pos) {return new PivDown(pos);}
 
     public class Update implements Action {
 
@@ -204,6 +206,43 @@ public class AutoRobot {
         }
     }
     public Action sampleScore(double delay) {return new SampleScore(delay);}
+    
+    public class SpecimenPickUp implements Action {
+        
+        double delay;
+        double rotation;
+        
+        public SpecimenPickUp(double delay, double rotation) {
+            this.delay = delay;
+            this.rotation = rotation;
+        }
+        
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!bool) {
+                timer.resetTimer();
+                slides.setExtTarget(extIn);
+                slides.setPivTarget(pivDown);
+                io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0.025);
+                io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0.025);
+                
+                io.rotPos = rotation;
+                
+                bool = true;
+            }
+            
+            if (timer() > delay - 0.5 && timer() < delay) {
+                io.clawClose();
+            }
+            
+            if (timer() > delay) {
+                bool = false;
+                return false;
+            }
+            return true;
+        }
+    }
+    public Action specimenPickUp(double delay, double rotation) {return new SpecimenPickUp(delay, rotation);}
 
     public class SpecimenPick implements Action {
 

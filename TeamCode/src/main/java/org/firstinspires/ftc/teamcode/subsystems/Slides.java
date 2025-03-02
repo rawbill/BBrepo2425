@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -24,9 +25,10 @@ public class Slides implements Subsystem {
     public PIDController extController;
 
     public double Kcos = 0.001;
-    public double pivP = 0.005, pivI = 0, pivD = 0.0005, pivF;
-//    public static double extP = 0.01, extI = 0, extD = 0.000001;
+    public double pivP = 0.01, pivI = 0, pivD = 0.0001, pivF, pivKcos = 0.25;
     public double extP = 0.01, extI = 0, extD = 0.0001;
+    
+    public final double ticks_per_degree = 5281.1 / 360;
 
     public double pivTarget = 0;
     public double extTarget = 0;
@@ -96,7 +98,7 @@ public class Slides implements Subsystem {
    }
 
    public void updatePiv() {
-       pivF = Math.cos(pivTarget/85) * Kcos;
+       pivF = Math.sin(Math.toRadians(pivTarget/ticks_per_degree)) * pivKcos * -1;
        pivController.setPIDF(pivP, pivI, pivD, pivF);
        double pivPos = pivMotor().getCurrentPosition();
        double pivPid = extController.calculate(pivPos, pivTarget);
@@ -114,19 +116,8 @@ public class Slides implements Subsystem {
 
     @Override
     public void update() {
-        pivF = Math.cos(pivTarget/85.0) * Kcos;
-        pivController.setPIDF(pivP, pivI, pivD, pivF);
-        int pivPos = pivMotor().getCurrentPosition();
-        double pivPid = pivController.calculate(pivPos, pivTarget);
-
-        extController.setPID(extP, extI, extD);
-        int extPos = spools()[0].getCurrentPosition();
-        double extPid = extController.calculate(extPos, extTarget);
-
-        setPivPower(pivPid);
-
-        setExtPower(extPid);
-
+        updatePiv();
+        updateExt();
     }
 
 //    @Override

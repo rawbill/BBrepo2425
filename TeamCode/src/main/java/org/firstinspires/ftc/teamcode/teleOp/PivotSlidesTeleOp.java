@@ -34,7 +34,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
     public static double pivInit = 600, pivDown = 1700, pivUp = 0, pivSpec = 600;
     public static double extIn = 0, extMid = 400, extOut = 2500;
-    public static double intakeCap = 1000;
+    public static double intakeCap = 1000, retractionCap = 0;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false, rBump = false, dPad = false, ddToggle = false, specCtrl = false;
 
@@ -97,6 +97,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             stateMachine();
+            if (slides.spools()[0].getCurrentPosition() < retractionCap) slides.setExtPower(0.2);
 
             drivetrain.updateCtrls(gamepad1, gamepad2);
             slides.updatePiv();
@@ -176,7 +177,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 slides.updateCtrls(gamepad1, gamepad2);
 
                 if (timer() < 0.25) {
-                    io.rest();
+                    io.outtakeInit();
 //                    slides.setExtTarget(extIn);
 //                    slides.update();
                 }
@@ -214,30 +215,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                     timer.resetTimer();
                 } else if (!gamepad2.y) yPressed = false;
                 break;
-            case OUTTAKE:
-                slides.setPivTarget(pivUp);
-                slides.setExtTarget(extOut);
-                io.outtake(gamepad2);
-
-                slides.updatePiv();
-
-
-                // transitions
-                if (gamepad2.a && !aPressed) {
-                    aPressed = true;
-
-                    setState(REST);
-                    timer.resetTimer();
-                } else if (!gamepad2.a) {
-                    aPressed = false;
-                }
-                break;
             case SPECIMEN:
-
 
 //                slides.setExtTarget(extIn);
                 if (timer.getElapsedTimeSeconds() < 0.125) {
-                    io.clawOpen();
+//                    io.clawOpen();
                     dPad = false;
                     ddToggle = false;
                     rBump = false;

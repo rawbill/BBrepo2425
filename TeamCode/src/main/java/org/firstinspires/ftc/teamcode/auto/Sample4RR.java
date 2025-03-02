@@ -119,18 +119,18 @@ public class Sample4RR extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-58.25, -40.75), Math.toRadians(90));
 
         TrajectoryActionBuilder score3Path = pick3Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-54, -54), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-53.5, -53.5), Math.toRadians(45));
 
         TrajectoryActionBuilder pick4Path = score3Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-60.5, -30.25), Math.toRadians(180));
+                .strafeToLinearHeading(new Vector2d(-57, -26.5), Math.toRadians(180));
 
         TrajectoryActionBuilder score4Path = pick4Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-48, -25), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-59, -59), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-47, -25), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
 
         TrajectoryActionBuilder ascendPath = score4Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-36, -13), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-26, -13), Math.toRadians(180));
+                .strafeToLinearHeading(new Vector2d(-36, -11.5), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-23, -11.5), Math.toRadians(180));
 
         score1 = score1Path.build();
         pick2  = pick2Path.build();

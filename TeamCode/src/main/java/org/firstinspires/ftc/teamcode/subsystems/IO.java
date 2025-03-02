@@ -74,8 +74,8 @@ public class IO implements Subsystem {
     }
 
     public void spec4auto() {
-        gbPos = 0.75;
-        pivPos = 0.625;
+        gbPos = 0.8;
+        pivPos = 0.65;
         rotPos = 0.5;
     }
 
@@ -90,7 +90,7 @@ public class IO implements Subsystem {
 //    }
     public void intakeInit() {
         upSub();
-        clawOpen();
+//        clawOpen();
         timer.resetTimer();
     }
 
@@ -176,7 +176,7 @@ public class IO implements Subsystem {
         gbPos = 0;
         pivPos = 0.075;
         ddToggle = false;
-        clawOpen();
+//        clawOpen();
     }
 
     public void specimen(Gamepad gp2) {
@@ -212,8 +212,8 @@ public class IO implements Subsystem {
     }
 
     public void rotate(Gamepad gp2) {
-        if (gp2.left_trigger > 0.8)  rotPos+=0.015;
-        if (gp2.right_trigger > 0.8) rotPos-=0.015;
+        if (gp2.left_trigger > 0.8)  rotPos+=0.025;
+        if (gp2.right_trigger > 0.8) rotPos-=0.025;
         clawRot.setPosition(rotPos);
     }
 

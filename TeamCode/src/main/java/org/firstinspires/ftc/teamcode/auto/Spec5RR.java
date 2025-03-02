@@ -74,9 +74,10 @@ public class Spec5RR extends LinearOpMode {
                                 new ParallelAction(
                                         pushesAndPick2,
                                         new SequentialAction(
-                                            autoRobot.setPiv(AutoRobot.pivDown),
-                                            autoRobot.waitSeconds(5),
-                                            autoRobot.specimenPick(3)
+//                                            autoRobot.waitSeconds(0.5),
+//                                            autoRobot.pivDown(AutoRobot.pivDown),
+                                            autoRobot.waitSeconds(10),
+                                            autoRobot.specimenPick(2)
                                         )
                                 ),
                                 new ParallelAction(
@@ -120,47 +121,45 @@ public class Spec5RR extends LinearOpMode {
 
     public void build_paths() {
         TrajectoryActionBuilder place1Path = follower.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(4, -29), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(3, -28.75), Math.toRadians(90));
 
         TrajectoryActionBuilder pushesAndPick2Path = place1Path.endTrajectory().fresh()
+                //                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(43, -30, Math.toRadians(180)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(56, -14, Math.toRadians(180)), Math.toRadians(0))
                 .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(26, -36, Math.toRadians(90)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(45, -14, Math.toRadians(90)), Math.toRadians(0))
-                .setTangent(Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(45, -48), Math.toRadians(90)) // push 2
+                .splineToLinearHeading(new Pose2d(56, -54, Math.toRadians(180)), Math.toRadians(-90)) // push 3
 
-                .splineToSplineHeading(new Pose2d(56, -14, Math.toRadians(90)), Math.toRadians(0))
+//                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(54, -30, Math.toRadians(180)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(64.5, -14, Math.toRadians(180)), Math.toRadians(0))
                 .setTangent(Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(56, -48), Math.toRadians(90)) // push 3
+                .splineToLinearHeading(new Pose2d(64.5, -54, Math.toRadians(180)), Math.toRadians(-90)) // push 4
 
-                .strafeToSplineHeading(new Vector2d(56, -40), Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(64, -14, Math.toRadians(90)), Math.toRadians(0))
-                .setTangent(Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(64, -48), Math.toRadians(90)) // push 4
-
+//                .setTangent(Math.toRadians(90))
                 .splineToSplineHeading(new Pose2d(52, -47, Math.toRadians(90)), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(46.5, -62), Math.toRadians(-90)); // pick 2
+                .splineToSplineHeading(new Pose2d(46.5, -62, Math.toRadians(90)), Math.toRadians(-90)); // pick 2
 
         TrajectoryActionBuilder place2Path = pushesAndPick2Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(3, -29), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(1, -28.75), Math.toRadians(90));
 
         TrajectoryActionBuilder pick3Path = place2Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(46.5, -62), Math.toRadians(90));
 
         TrajectoryActionBuilder place3Path = pick3Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(2, -29), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(0.5, -28.75), Math.toRadians(90));
 
         TrajectoryActionBuilder pick4Path = place3Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(46.5, -62), Math.toRadians(90));
 
         TrajectoryActionBuilder place4Path = pick4Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(1, -29), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(0, -28.75), Math.toRadians(90));
 
         TrajectoryActionBuilder pick5Path = place4Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(46.5, -62), Math.toRadians(90));
 
         TrajectoryActionBuilder place5Path = pick5Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(0, -29), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-0.5, -28.75), Math.toRadians(90));
 
         TrajectoryActionBuilder parkPath = place5Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(32, -60), Math.toRadians(90));
