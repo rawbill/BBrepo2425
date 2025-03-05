@@ -30,8 +30,8 @@ public class Spec4RR extends LinearOpMode {
     public Timer pathTimer, specTimer;
 
     Pose2d initialPose = new Pose2d(15, -62.5, Math.toRadians(90));
-    MecanumDrive ogFollower;
-    DoubleLocalizerDrive follower;
+    MecanumDrive follower;
+
 
     AutoRobot autoRobot;
 
@@ -45,8 +45,7 @@ public class Spec4RR extends LinearOpMode {
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
-        ogFollower = new MecanumDrive(hardwareMap, initialPose);
-        follower = new DoubleLocalizerDrive(hardwareMap, initialPose);
+        follower = new MecanumDrive(hardwareMap, initialPose);
 
         autoRobot = new AutoRobot(hardwareMap, telemetryA);
 
