@@ -33,7 +33,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     public static int state;
 
     public static double pivInit = 600, pivDown = 1700, pivUp = 0;
-    public static double extIn = 0, extMid = 400, extOut = 2500, extAscend = 2000;
+    public static double extIn = 0, extMid = 400, extOut = 2500, extAscend = 1000;
     public static double intakeCap = 1000, retractionCap = 0;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false;

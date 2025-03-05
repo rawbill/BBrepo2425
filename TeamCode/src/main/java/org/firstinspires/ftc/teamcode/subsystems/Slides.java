@@ -4,10 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -21,24 +19,19 @@ public class Slides implements Subsystem {
     private DcMotorEx lSpool;
     private DcMotorEx rSpool;
 
-    public PIDFController pivController;
+    public PIDController pivController;
     public PIDController extController;
-
-    public double Kcos = 0.001;
-    public double pivP = 0.01, pivI = 0, pivD = 0.0001, pivF, pivKcos = 0.25;
-    public double extP = 0.01, extI = 0, extD = 0.0001;
     
-    public final double ticks_per_degree = 5281.1 / 360;
+    public static double pivPu = 0.00625, pivIu = 0, pivDu = 0.00075, pivPd = 0.0005, pivId = 0.0, pivDd = 0.0;
+    public static double extP = 0.01, extI = 0, extD = 0.0001;
 
     public double pivTarget = 0;
     public double extTarget = 0;
 
     public Slides(HardwareMap map, Telemetry telemetry) {
 
-        pivController = new PIDController(pivP, pivI, pivD);
+        pivController = new PIDController(pivPu, pivIu, pivDu);
         extController = new PIDController(extP, extI, extD);
-
-//        pivController.setTolerance(25);
 
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -98,10 +91,13 @@ public class Slides implements Subsystem {
    }
 
    public void updatePiv() {
-       pivF = Math.sin(Math.toRadians(pivTarget/ticks_per_degree)) * pivKcos * -1;
-       pivController.setPIDF(pivP, pivI, pivD, pivF);
-       double pivPos = pivMotor().getCurrentPosition();
-       double pivPid = extController.calculate(pivPos, pivTarget);
+       int pivPos = pivMotor().getCurrentPosition();
+       
+       if ((pivTarget - pivPos) < 0) pivController.setPID(pivPu, pivIu, pivDu);
+       else pivController.setPID(pivPd, pivId, pivDd);
+       
+       double pivPid = pivController.calculate(pivPos, pivTarget);
+       pivPid = Math.max(-1, Math.min(1, pivPid));
 
        pivMotor().setPower(pivPid);
    }
@@ -116,8 +112,22 @@ public class Slides implements Subsystem {
 
     @Override
     public void update() {
-        updatePiv();
-        updateExt();
+        int pivPos = pivMotor().getCurrentPosition();
+        
+        if ((pivTarget - pivPos) < 0) pivController.setPID(pivPu, pivIu, pivDu);
+        else pivController.setPID(pivPd, pivId, pivDd);
+        
+        double pivPid = pivController.calculate(pivPos, pivTarget);
+        pivPid = Math.max(-1, Math.min(1, pivPid));
+        
+        extController.setPID(extP, extI, extD);
+        int extPos = spools()[0].getCurrentPosition();
+        double extPid = extController.calculate(extPos, extTarget);
+        
+        setPivPower(pivPid);
+        
+        setExtPower(extPid);
+        
     }
 
 //    @Override
