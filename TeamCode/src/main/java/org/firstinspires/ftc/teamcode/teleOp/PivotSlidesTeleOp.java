@@ -32,11 +32,13 @@ public class PivotSlidesTeleOp extends LinearOpMode {
     private Timer timer;
     public static int state;
 
-    public static double pivInit = 600, pivDown = 1700, pivUp = 0;
+    public static double pivInit = 600, pivDown = 1750, pivUp = 0;
     public static double extIn = 0, extMid = 400, extOut = 2500, extAscend = 1000;
     public static double intakeCap = 1000, retractionCap = 0;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false;
+    
+    int startExt;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,7 +52,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
         };
 
         for (Subsystem system : subsystems) system.init();
-        sleep(1000);
+        sleep(250);
         setState(0);
         timer = new Timer();
 
@@ -208,7 +210,7 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                     io.outtakeInit();
                 }
                 if (timer() > 0.25) {
-                    slides.setExtTarget(extAscend);
+                    slides.setExtTarget(slides.spools()[0].getCurrentPosition());
                     slides.update();
                 }
                 

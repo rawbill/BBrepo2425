@@ -51,8 +51,8 @@ public class IO implements Subsystem {
     }
 
     public void rest() {
-        gbPos = 0.45;
-        pivPos = 0.2;
+        gbPos = 0.8;
+        pivPos = 0.075;
         rotPos = 0.5;
     }
 

@@ -94,7 +94,7 @@ public class Sample4RR extends LinearOpMode {
                                 ),
                                 new ParallelAction(
                                         score4,
-                                        autoRobot.sampleScore(4.25)
+                                        autoRobot.sampleScore(4.75)
                                 ),
                                 ascend,
                                 autoRobot.rest()
@@ -110,27 +110,27 @@ public class Sample4RR extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-54, -54), Math.toRadians(45));
 
         TrajectoryActionBuilder pick2Path = score1Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-47.5, -39.5), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-47.5, -40), Math.toRadians(90));
 
         TrajectoryActionBuilder score2Path = pick2Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-54, -54), Math.toRadians(45));
 
         TrajectoryActionBuilder pick3Path = score2Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-58.25, -40.75), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-58, -41.5), Math.toRadians(90));
 
         TrajectoryActionBuilder score3Path = pick3Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-53.5, -53.5), Math.toRadians(45));
 
         TrajectoryActionBuilder pick4Path = score3Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-57, -26.5), Math.toRadians(180));
+                .strafeToLinearHeading(new Vector2d(-53.5, -26.5), Math.toRadians(180));
 
         TrajectoryActionBuilder score4Path = pick4Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-47, -25), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-55.5, -55.5), Math.toRadians(45));
 
         TrajectoryActionBuilder ascendPath = score4Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-36, -11.5), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-23, -11.5), Math.toRadians(180));
+                .strafeToLinearHeading(new Vector2d(-17, -11.5), Math.toRadians(180));
 
         score1 = score1Path.build();
         pick2  = pick2Path.build();

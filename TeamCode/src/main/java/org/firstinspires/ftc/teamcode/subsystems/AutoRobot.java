@@ -16,7 +16,7 @@ public class AutoRobot {
     public Slides slides;
     public IO io;
 
-    public static double pivInit = 600, pivDown = 1700, pivUp = 0, pivSpec = 400, pivBack = -50;
+    public static double pivInit = 600, pivDown = 1750, pivUp = 0, pivSpec = 400, pivBack = -50;
     public static double extIn = 0, extMid = 600, extOut = 2475;
 
     public double extSpecI = 200, extSpecO = 1500;
@@ -88,16 +88,18 @@ public class AutoRobot {
     }
     public Action rest() {return new Rest();}
 
-    public class Straight implements Action {
+    public class End implements Action {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             slides.setPivTarget(pivUp);
-            io.straight();
+            slides.setExtTarget(extIn);
+            io.rest();
+            io.clawOpen();
             return false;
         }
     }
-    public Action straight() {return new Straight();}
+    public Action end() {return new End();}
 
     public class PivDown implements Action {
 

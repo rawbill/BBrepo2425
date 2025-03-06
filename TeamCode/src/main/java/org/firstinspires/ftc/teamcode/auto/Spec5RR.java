@@ -110,7 +110,7 @@ public class Spec5RR extends LinearOpMode {
                                 ),
                                 new ParallelAction(
                                         park,
-                                        autoRobot.straight()
+                                        autoRobot.end()
                                 )
                         ),
                         autoRobot.updateAction()
