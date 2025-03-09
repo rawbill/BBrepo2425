@@ -16,7 +16,7 @@ public class AutoRobot {
     public Slides slides;
     public IO io;
 
-    public static double pivInit = 600, pivDown = 1750, pivUp = 0, pivSpec = 400, pivBack = -50;
+    public static double pivInit = 600, pivDown = 1800, pivUp = 0, pivSpec = 400, pivBack = -50;
     public static double extIn = 0, extMid = 600, extOut = 2475;
 
     public double extSpecI = 200, extSpecO = 1500;

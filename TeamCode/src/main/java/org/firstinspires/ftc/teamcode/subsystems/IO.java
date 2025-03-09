@@ -27,7 +27,7 @@ public class IO implements Subsystem {
 
     public boolean dPad = false, ddToggle = false, rBump = false, rbToggle = false, rPad = false, lPad = false, inv = false;
 
-    public double invOffset = 0.025;
+    public double invOffset = 0; // 0.025;
 
 
 
@@ -51,7 +51,7 @@ public class IO implements Subsystem {
     }
 
     public void rest() {
-        gbPos = 0.8;
+        gbPos = 0.75;
         pivPos = 0.075;
         rotPos = 0.5;
     }
@@ -68,7 +68,7 @@ public class IO implements Subsystem {
     }
 
     public void spec4tele() {
-        gbPos = 0.8;
+        gbPos = 0.75;
         pivPos = 0.7;
         rotPos = 0.5;
     }
@@ -79,15 +79,9 @@ public class IO implements Subsystem {
         rotPos = 0.5;
     }
 
-
     public void clawOpen()  {clawPos = clawOpen;}
     public void clawClose() {clawPos = clawClose;}
-
-//    public void intakeInit() {
-//        straight();
-//        clawOpen();
-//        timer.resetTimer();
-//    }
+    
     public void intakeInit() {
         upSub();
 //        clawOpen();
@@ -119,7 +113,6 @@ public class IO implements Subsystem {
         } else if (!gp2.dpad_left) {
             lPad = false;
         }
-
 
 
         if (gp2.dpad_down && !dPad) {
@@ -158,7 +151,7 @@ public class IO implements Subsystem {
     }
 
     public void outtake(Gamepad gp2) {
-        rotate(gp2);
+        rotPos = 0.5;
         if (gp2.right_bumper && !rBump) {
             rBump = true;
             rbToggle = !rbToggle;
@@ -180,7 +173,7 @@ public class IO implements Subsystem {
     }
 
     public void specimen(Gamepad gp2) {
-        rotate(gp2);
+        rotPos = 0.5;
         if (gp2.right_bumper && !rBump) {
             rBump = true;
             rbToggle = !rbToggle;
@@ -214,7 +207,7 @@ public class IO implements Subsystem {
     public void rotate(Gamepad gp2) {
         if (gp2.left_trigger > 0.8)  rotPos+=0.025;
         if (gp2.right_trigger > 0.8) rotPos-=0.025;
-        clawRot.setPosition(rotPos);
+//        clawRot.setPosition(rotPos);
     }
 
     @Override
@@ -242,7 +235,6 @@ public class IO implements Subsystem {
 
 //        leftGb.setPower(-gp2.right_stick_y);
 //        rightGb.setPower(-gp2.right_stick_y);
-
     }
 
     public double gbSetter(double input, double dOffset) {

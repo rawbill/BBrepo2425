@@ -130,7 +130,7 @@ public class Spec4RR extends LinearOpMode {
 
 //                .setTangent(Math.toRadians(90))
 //            .splineToSplineHeading(new Pose2d(52, -47, Math.toRadians(90)), Math.toRadians(180))
-            .splineToLinearHeading(new Pose2d(46.5, -64.5, Math.toRadians(90)), Math.toRadians(-90)); // pick 2
+            .splineToLinearHeading(new Pose2d(46.5, -64, Math.toRadians(90)), Math.toRadians(-90)); // pick 2
 
         TrajectoryActionBuilder place2Path = pushesAndPick2Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(0, -28.625), Math.toRadians(90));

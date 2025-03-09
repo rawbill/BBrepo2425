@@ -27,6 +27,12 @@ public class Slides implements Subsystem {
 
     public double pivTarget = 0;
     public double extTarget = 0;
+    
+    public static double pivInit = 600, pivDown = 1750, pivUp = 0;
+    public static double extIn = 0, extMid = 400, extOut = 2500, extAscend = 1000;
+    public static double intakeCap = 1000;
+    
+    public boolean lsbPressed = false;
 
     public Slides(HardwareMap map, Telemetry telemetry) {
 
@@ -54,6 +60,15 @@ public class Slides implements Subsystem {
         rSpool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rSpool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+    }
+    
+    public void resetExt() {
+        
+        lSpool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lSpool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
+        rSpool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rSpool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public DcMotorEx pivMotor() {
@@ -144,5 +159,16 @@ public class Slides implements Subsystem {
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
 
         setExtPower(-gp2.left_stick_y);
+        
+        if (gp2.left_stick_button && !lsbPressed) {
+            lsbPressed = true;
+            resetExt();
+        } else if (!gp2.a) {
+            lsbPressed = false;
+        }
+        
+        pivInit += -gp2.right_stick_y * 5;
+        pivDown += -gp2.right_stick_y * 5;
+        pivUp   += -gp2.right_stick_y * 5;
     }
 }

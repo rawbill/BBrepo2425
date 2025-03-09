@@ -20,13 +20,13 @@ public class MeepMeepTesting {
 
         sampleBot.runAction(sampleBot.getDrive().actionBuilder(new Pose2d(-32, -62.5, Math.toRadians(90)))
                 .strafeToLinearHeading(new Vector2d(-54, -54), Math.toRadians(45)) // drop preload
-                .strafeToLinearHeading(new Vector2d(-47.5, -40), Math.toRadians(90)) // pick 1
+                .strafeToLinearHeading(new Vector2d(-47.5, -40.25), Math.toRadians(90)) // pick 1
                 .strafeToLinearHeading(new Vector2d(-54, -54), Math.toRadians(45)) // score 1
                 .strafeToLinearHeading(new Vector2d(-58, -41.5), Math.toRadians(90)) // pick 2
                 .strafeToLinearHeading(new Vector2d(-53.5, -53.5), Math.toRadians(45)) // score 2
                 .strafeToLinearHeading(new Vector2d(-53.5, -26.5), Math.toRadians(180)) // pick 3
                 .strafeToLinearHeading(new Vector2d(-45, -25), Math.toRadians(180))
-                .strafeToLinearHeading(new Vector2d(-55.5, -55.5), Math.toRadians(45)) // score 3
+                .strafeToLinearHeading(new Vector2d(-53.5, -53.5), Math.toRadians(45)) // score 3
                 .strafeToLinearHeading(new Vector2d(-36, -11.5), Math.toRadians(180))
                 .strafeToLinearHeading(new Vector2d(-17, -11.5), Math.toRadians(180)) // park
                 .build());
