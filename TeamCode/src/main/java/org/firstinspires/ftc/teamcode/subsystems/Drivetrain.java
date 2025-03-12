@@ -101,29 +101,5 @@ public class Drivetrain implements Subsystem {
             }
         }
     }
-
-    public void startEncoder() {
-        lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        lfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rfMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rbMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    
-    public void stopEncoder() {
-        lfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rfMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rbMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        lfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rfMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rbMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
     
 }
