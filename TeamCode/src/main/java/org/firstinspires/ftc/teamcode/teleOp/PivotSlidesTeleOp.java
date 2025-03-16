@@ -75,6 +75,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             telemetry.addData("gbPos", io.gbPos);
             telemetry.addData("pivSetter", io.pivSetter(slides.spools()[0].getCurrentPosition(), io.invOffset));
             telemetry.addData("pivPos", io.pivPos);
+            
+            telemetry.addData("lf", drivetrain.lfPower);
+            telemetry.addData("lb", drivetrain.lbPower);
+            telemetry.addData("rf", drivetrain.rfPower);
+            telemetry.addData("rb", drivetrain.rbPower);
 
             telemetry.update();
         }

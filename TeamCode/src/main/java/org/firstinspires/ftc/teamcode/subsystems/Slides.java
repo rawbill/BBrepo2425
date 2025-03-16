@@ -158,13 +158,17 @@ public class Slides implements Subsystem {
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
 
-        setExtPower(-gp2.left_stick_y);
-        
-        if (gp2.left_stick_button && !lsbPressed) {
-            lsbPressed = true;
-            resetExt();
-        } else if (!gp2.a) {
-            lsbPressed = false;
+        if (!gp2.left_bumper) {
+            
+            setExtPower(-gp2.left_stick_y);
+            
+            if (gp2.left_stick_button && !lsbPressed) {
+                lsbPressed = true;
+                resetExt();
+            } else if (!gp2.a) {
+                lsbPressed = false;
+            }
+            
         }
         
         pivInit += -gp2.right_stick_y * 5;

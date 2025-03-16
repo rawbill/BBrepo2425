@@ -26,9 +26,12 @@ public class Drivetrain implements Subsystem {
 
     Telemetry telemetry;
     
-    double y, x, rx;
-    double lfPower, lbPower, rfPower, rbPower;
-    double denominator;
+    double y = 0, x = 0, rx = 0;
+    public double lfPower = 0;
+    public double lbPower = 0;
+    public double rfPower = 0;
+    public double rbPower = 0;
+    double denominator = 0;
 
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -97,9 +100,10 @@ public class Drivetrain implements Subsystem {
             if (gp1.right_trigger > 0.1) {
                 setDriveVectors(-gp1.left_stick_y * 0.3, gp1.left_stick_x * 0.4, gp1.right_stick_x * 0.3);
             } else {
-                setDriveVectors(-gp1.left_stick_y, gp1.left_stick_x, gp1.right_stick_x);
+                setDriveVectors(-gp1.left_stick_y * 0.3, gp1.left_stick_x * 0.4, gp1.right_stick_x * 0.3);
             }
         }
+        update();
     }
     
 }
