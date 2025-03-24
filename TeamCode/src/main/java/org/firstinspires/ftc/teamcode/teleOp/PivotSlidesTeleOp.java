@@ -4,26 +4,24 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.IO;
 import org.firstinspires.ftc.teamcode.subsystems.Slides;
-import org.firstinspires.ftc.teamcode.subsystems.Subsystem;
 
 @Config
 @TeleOp(name="PivotSlidesTeleOp", group=" ")
 public class PivotSlidesTeleOp extends LinearOpMode {
     
-    private ElapsedTime runtime = new ElapsedTime();
     Drivetrain drivetrain;
     Slides slides;
     IO io;
 
     private Timer timer;
+    
     public static int state;
 
     private boolean xPressed = false, aPressed = false, bPressed = false, yPressed = false;
@@ -34,15 +32,9 @@ public class PivotSlidesTeleOp extends LinearOpMode {
         drivetrain = new Drivetrain(hardwareMap, telemetry);
         slides = new Slides(hardwareMap, telemetry);
         io = new IO(hardwareMap, telemetry);
-
-        Subsystem[] subsystems = new Subsystem[] {
-                drivetrain, slides, io
-        };
-
-        for (Subsystem system : subsystems) system.init();
-        sleep(250);
-        setState(0);
-        timer = new Timer();
+        
+        setState(2);
+         timer = new Timer();
 
         while (!opModeIsActive()) {
             stateMachine();
@@ -50,15 +42,11 @@ public class PivotSlidesTeleOp extends LinearOpMode {
             slides.updatePiv();
             io.update();
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
-            telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
+            telemetry.addData("extPos ", slides.spools()[1].getCurrentPosition());
             telemetry.update();
         }
 
         waitForStart();
-
-        runtime.reset();
-
-        setState(2);
 
         while (opModeIsActive()) {
 
@@ -70,10 +58,10 @@ public class PivotSlidesTeleOp extends LinearOpMode {
 
             telemetry.addData("STATE", state);
             telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
-            telemetry.addData("extPos ", slides.spools()[0].getCurrentPosition());
-            telemetry.addData("gbSetter", io.gbSetter(slides.spools()[0].getCurrentPosition(), io.invOffset));
+            telemetry.addData("extPos ", slides.spools()[1].getCurrentPosition());
+            telemetry.addData("gbSetter", io.gbSetter(slides.spools()[1].getCurrentPosition(), io.invOffset));
             telemetry.addData("gbPos", io.gbPos);
-            telemetry.addData("pivSetter", io.pivSetter(slides.spools()[0].getCurrentPosition(), io.invOffset));
+            telemetry.addData("pivSetter", io.pivSetter(slides.spools()[1].getCurrentPosition(), io.invOffset));
             telemetry.addData("pivPos", io.pivPos);
             
             telemetry.addData("lf", drivetrain.lfPower);
@@ -119,8 +107,8 @@ public class PivotSlidesTeleOp extends LinearOpMode {
                 }
                 if (timer() > 0.5) {
                     slides.updateCtrls(gamepad1, gamepad2);
-                    if (slides.spools()[0].getCurrentPosition() > Slides.intakeCap) slides.setExtPower(-0.3);
-                    io.intake(gamepad2, slides.spools()[0].getCurrentPosition());
+                    if (slides.spools()[1].getCurrentPosition() > Slides.intakeCap) slides.setExtPower(-0.3);
+                    io.intake(gamepad2, slides.spools()[1].getCurrentPosition());
                 }
                 slides.updatePiv();
 

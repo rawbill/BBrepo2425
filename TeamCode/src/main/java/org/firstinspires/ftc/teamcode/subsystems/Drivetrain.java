@@ -1,65 +1,39 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static java.lang.Thread.sleep;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.pedroPathing_old.util.Timer;
 
 public class Drivetrain implements Subsystem {
-
-    public DcMotorEx lfMotor;
-    public DcMotorEx lbMotor;
-    public DcMotorEx rfMotor;
-    public DcMotorEx rbMotor;
-
-    private final IMU imu;
-
+    
+    public DcMotor lfMotor, lbMotor, rfMotor, rbMotor;
+    
     Telemetry telemetry;
     
-    double y = 0, x = 0, rx = 0;
-    public double lfPower = 0;
-    public double lbPower = 0;
-    public double rfPower = 0;
-    public double rbPower = 0;
-    double denominator = 0;
-
+    double y = 0, x = 0, rx = 0, denominator = 0;
+    public double lfPower = 0, lbPower = 0, rfPower = 0, rbPower = 0;
+    
     public Drivetrain(HardwareMap map, Telemetry telemetry) {
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        lfMotor = map.get(DcMotorEx.class, "lfm");
-        lbMotor = map.get(DcMotorEx.class, "lbm");
-        rfMotor = map.get(DcMotorEx.class, "rfm");
-        rbMotor = map.get(DcMotorEx.class, "rbm");
-
-        imu = map.get(IMU.class, "imu");
-        imu.initialize(
-            new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                    RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
-                )
-            )
-        );
-
-        lfMotor.setDirection(DcMotorEx.Direction.REVERSE);
-        lbMotor.setDirection(DcMotorEx.Direction.REVERSE);
-
-        lfMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        lbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rfMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rbMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        
+        lfMotor = map.get(DcMotor.class, "lfm");
+        lbMotor = map.get(DcMotor.class, "lbm");
+        rfMotor = map.get(DcMotor.class, "rfm");
+        rbMotor = map.get(DcMotor.class, "rbm");
+        
+        lfMotor.setDirection(DcMotor.Direction.REVERSE);
+        lbMotor.setDirection(DcMotor.Direction.REVERSE);
+        
+        lfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rfMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rbMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-
+    
     @Override
     public void init() {
         telemetry.addData("Drivetrain", "Initialized");
@@ -71,9 +45,7 @@ public class Drivetrain implements Subsystem {
         this.x = x;
         this.rx = rx;
     }
-
-    public IMU imu() { return imu; }
-
+    
     @Override
     public void update() {
         denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -87,22 +59,22 @@ public class Drivetrain implements Subsystem {
         rfMotor.setPower(rfPower);
         rbMotor.setPower(rbPower);
     }
-
+    
     @Override
     public void updateCtrls(Gamepad gp1, Gamepad gp2) {
-        if (gp2.left_bumper) {
-            if (gp2.left_stick_button || gp2.right_stick_button) {
-                setDriveVectors(-gp2.left_stick_y * 0.3, gp2.left_stick_x * 0.4, gp2.right_stick_x * 0.3);
-            } else {
-                setDriveVectors(-gp2.left_stick_y, gp2.left_stick_x, gp2.right_stick_x);
-            }
-        } else {
+        if (!gp2.left_bumper) {
             if (gp1.right_trigger > 0.1) {
                 setDriveVectors(-gp1.left_stick_y * 0.3, gp1.left_stick_x * 0.4, gp1.right_stick_x * 0.3);
             } else {
-                setDriveVectors(-gp1.left_stick_y * 0.3, gp1.left_stick_x * 0.4, gp1.right_stick_x * 0.3);
+                setDriveVectors(-gp1.left_stick_y, gp1.left_stick_x, gp1.right_stick_x); // not supposed to be slow
             }
-        }
+        } /* else {
+            if (gp2.left_stick_button || gp2.right_stick_button) {
+                setDriveVectors(-gp2.left_stick_y * 0.3, gp2.left_stick_x * 0.4, gp2.right_stick_x * 0.3);
+            } else {
+                setDriveVectors(-gp2.left_stick_y, gp2.left_stick_x, gp2.right_stick_x); // not supposed to be slow
+            }
+        } */
         update();
     }
     

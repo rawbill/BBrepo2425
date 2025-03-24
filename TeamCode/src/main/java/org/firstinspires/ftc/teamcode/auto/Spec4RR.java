@@ -57,7 +57,7 @@ public class Spec4RR extends LinearOpMode {
         while (!isStopRequested() && !opModeIsActive()) {
             autoRobot.update();
             telemetry.addData("pivPos ", autoRobot.slides.pivMotor().getCurrentPosition());
-            telemetry.addData("extPos ", autoRobot.slides.spools()[0].getCurrentPosition());
+            telemetry.addData("extPos ", autoRobot.slides.spools()[1].getCurrentPosition());
             telemetry.update();
         }
 

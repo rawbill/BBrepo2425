@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.pedropathing.util.Timer;
@@ -15,6 +17,8 @@ public class AutoRobot {
     
     public Slides slides;
     public IO io;
+    
+    Telemetry telemetry;
 
     public static double pivInit = 600, pivDown = 1800, pivUp = 0, pivSpec = 400, pivBack = -50;
     public static double extIn = 0, extMid = 600, extOut = 2475;
@@ -26,6 +30,8 @@ public class AutoRobot {
     public AutoRobot(HardwareMap map, Telemetry telemetry) {
         slides = new Slides(map, telemetry);
         io = new IO(map, telemetry);
+        
+        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         timer = new Timer();
     }
@@ -125,6 +131,11 @@ public class AutoRobot {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             slides.update();
             io.update();
+            
+            telemetry.addData("pivPos ", slides.pivMotor().getCurrentPosition());
+            telemetry.addData("extPos ", slides.spools()[1].getCurrentPosition());
+            telemetry.update();
+            
             return true;
         }
     }
@@ -146,8 +157,8 @@ public class AutoRobot {
                 timer.resetTimer();
                 slides.setExtTarget(extIn);
                 slides.setPivTarget(pivDown);
-                io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0.025);
-                io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0.025);
+                io.gbPos = io.gbSetter(slides.spools()[1].getCurrentPosition(), 0.025);
+                io.pivPos = io.pivSetter(slides.spools()[1].getCurrentPosition(), 0.025);
 
                 if (rotate) io.rotPos = 0.8;
                 else io.rotPos = 0.5;
@@ -225,8 +236,8 @@ public class AutoRobot {
                 timer.resetTimer();
                 slides.setExtTarget(extIn);
                 slides.setPivTarget(pivDown);
-                io.gbPos = io.gbSetter(slides.spools()[0].getCurrentPosition(), 0.025);
-                io.pivPos = io.pivSetter(slides.spools()[0].getCurrentPosition(), 0.025);
+                io.gbPos = io.gbSetter(slides.spools()[1].getCurrentPosition(), 0.025);
+                io.pivPos = io.pivSetter(slides.spools()[1].getCurrentPosition(), 0.025);
                 
                 io.rotPos = rotation;
                 
