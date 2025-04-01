@@ -145,7 +145,7 @@ public class Spec4RR extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(46.5, -64.5), Math.toRadians(90));
 
         TrajectoryActionBuilder place4Path = pick4Path.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-1, -28.625), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-1.5, -28.625), Math.toRadians(90));
 
         TrajectoryActionBuilder parkPath = place4Path.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(32, -60), Math.toRadians(90));
